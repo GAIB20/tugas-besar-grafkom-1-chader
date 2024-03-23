@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chader : 2D WebGL Project</title>
+    <link rel="stylesheet" href="./styles/main.css">
+</head>
+<body>
+    <canvas id="webgl-canvas"/>
+
+    <!-- SHADER SECTION -->
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 a_Position;
+        void main() {
+            gl_Position = a_Position;
+        }
+    </script>
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        void main() {
+            gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        }
+    </script>
+    
+    <!-- Javascript Files -->
+    <script src="./dist/main.js"></script>
+</body>
+</html>

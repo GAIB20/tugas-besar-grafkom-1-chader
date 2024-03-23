@@ -1,0 +1,19 @@
+{
+  "name": "tugas-besar-grafkom-1-chader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "lite-server",
+    "dev": "npm run build && npm start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/webgl2": "^0.0.11",
+    "lite-server": "^2.6.1",
+    "typescript": "^5.4.3"
+  }
+}
