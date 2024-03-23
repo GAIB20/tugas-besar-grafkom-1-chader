@@ -7,16 +7,18 @@
     <link rel="stylesheet" href="./styles/main.css">
 </head>
 <body>
-    <canvas id="webgl-canvas"/>
+    <canvas id="webgl-canvas" width="500" height="500"/>
 
     <!-- SHADER SECTION -->
-    <script id="vertex-shader" type="x-shader/x-vertex">
+    <script id="vertex-shader-2d" type="notjs">
         attribute vec4 a_Position;
         void main() {
             gl_Position = a_Position;
         }
     </script>
-    <script id="fragment-shader" type="x-shader/x-fragment">
+    <script id="fragment-shader-2d" type="notjs">
+        precision mediump float;
+
         void main() {
             gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
         }
