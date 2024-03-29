@@ -7,4 +7,3 @@ user@hello:~$ git clone https://github.com/GAIB20/tugas-besar-grafkom-1-chader.g
 2. Navigate to the cloned directory. e.g. with `cd ${DIR_NAME}`.
 3. Install all the dependencies `npm install`.
 3. Run the dev script => `npm run dev`. <br>
-Note: Rerun the dev script each time you change the typescript file, since its needed to be recompiled

@@ -52,20 +52,17 @@ function main() {
         return;
     }
 
-    // Get the attribute locations
+    // Setup Position Buffer
     const positionAttributeLocation = gl.getAttribLocation(program, 'a_Position');
-
-    // Create the buffer
     const positionBuffer = gl.createBuffer();
-
-    // Bind the buffer
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-
-    // Give the buffer some data
     const positions = [
-        -0.5, -0.5,
-         0.5, -0.5,
-         0.0,  0.5
+        10, 20,
+        400, 20,
+        10, 30,
+        10, 30,
+        400, 20,
+        400, 30,
     ];
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 
@@ -82,6 +79,8 @@ function main() {
     gl.useProgram(program);
 
     // Turn on the attribute
+    const resolutionUniformLocation = gl.getUniformLocation(program, 'u_Resolution');
+    gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
     gl.enableVertexAttribArray(positionAttributeLocation);
 
     // Bind the position buffer
@@ -97,7 +96,7 @@ function main() {
 
     // Draw
     const primitiveType = gl.TRIANGLES;
-    const count = 3;
+    const count = 6;
     gl.drawArrays(primitiveType, offset, count);
 }
 
