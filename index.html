@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chader : 2D WebGL Project</title>
+    <link rel="icon" href="./public/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="./styles/main.css">
 </head>
 <body>
@@ -31,8 +32,10 @@
     <script id="fragment-shader-2d" type="notjs">
         precision mediump float;
 
+        uniform vec4 u_Color;
+
         void main() {
-            gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+            gl_FragColor = u_Color;
         }
     </script>
     
