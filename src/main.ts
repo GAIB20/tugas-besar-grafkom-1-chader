@@ -1,3 +1,6 @@
+import { setHeader, setupSlider } from "./ui.js";
+import { createProgram, createShader } from "./utils/shaderUtils.js";
+
 function resizeCanvasToDisplaySize() {
     const canvas = document.querySelector('#webgl-canvas') as HTMLCanvasElement;
     if (!canvas) {

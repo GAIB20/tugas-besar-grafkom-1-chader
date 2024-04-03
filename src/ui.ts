@@ -1,4 +1,4 @@
-interface SliderOptions {
+export interface SliderOptions {
     value?: number;
     min?: number;
     max?: number;
@@ -13,7 +13,7 @@ if (!container) {
     throw new Error("Could not find container");
 }
 
-function setupSlider(id : string, title : string, options : SliderOptions) {
+export function setupSlider(id : string, title : string, options : SliderOptions) {
     const label = document.createElement("label");
     label.htmlFor = id;
     label.innerText = title;
@@ -42,7 +42,7 @@ function setupSlider(id : string, title : string, options : SliderOptions) {
     container?.appendChild(slider);
 }   
 
-function setHeader(title : string) {
+export function setHeader(title : string) {
     const header = document.createElement("h2");
     header.innerText = title;
 
