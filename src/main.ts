@@ -63,16 +63,6 @@ function main() {
     // Setup Position Buffer
     const positionAttributeLocation = gl.getAttribLocation(program, 'a_Position');
     const positionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    const positions = [
-        10, 20,
-        80, 20,
-        10, 30,
-        10, 30,
-        80, 20,
-        80, 30,
-    ];
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 
     resizeCanvasToDisplaySize();
 
@@ -101,9 +91,13 @@ function main() {
     const resolutionUniformLocation = gl.getUniformLocation(program, 'u_Resolution');
     gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
 
+    const pixelPerUnit = 32;
+    const pixelPerUnitUniformLocation = gl.getUniformLocation(program, 'u_PixelPerUnit');
+    gl.uniform1f(pixelPerUnitUniformLocation, pixelPerUnit);
+
     const colorUniformLocation = gl.getUniformLocation(program, 'u_Color');
 
-    setRectangle(gl, randomInt(300), randomInt(300), randomInt(300), randomInt(300));
+    setRectangle(gl, 0, 0, 10, 10);
 
     gl.uniform4f(colorUniformLocation, 0.576, 0.847, 0.890, 1);
 
@@ -119,10 +113,13 @@ function randomInt(range : number) {
 }
 
 function setRectangle(gl : WebGL2RenderingContext, x : number, y : number, width : number, height : number) {
-    const x1 = x;
-    const x2 = x + width;
-    const y1 = y;
-    const y2 = y + height;
+    const halfWidth = width / 2;
+    const halfHeight = height / 2;
+
+    const x1 = x - halfWidth;
+    const x2 = x + halfWidth;
+    const y1 = y - halfHeight;
+    const y2 = y + halfHeight;
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
         x1, y1,
