@@ -52,6 +52,14 @@ function main() {
         return;
     }
 
+    setHeader('Transformation');
+    setupSlider('x', 'Position-x', { value: 0, min: 0, max: 300, slide: (value) => { 
+        console.log(value);
+    }});
+    setupSlider('y', 'Position-y', { value: 0, min: 0, max: 300, slide: (value) => { 
+        console.log(value);
+    }});
+
     // Setup Position Buffer
     const positionAttributeLocation = gl.getAttribLocation(program, 'a_Position');
     const positionBuffer = gl.createBuffer();
@@ -72,7 +80,7 @@ function main() {
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
     // Clear the canvas
-    gl.clearColor(0, 0, 0, 0);
+    gl.clearColor(0.118, 0.125, 0.188, 1.0); // dark blue background
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     // Use the program
@@ -97,7 +105,7 @@ function main() {
 
     setRectangle(gl, randomInt(300), randomInt(300), randomInt(300), randomInt(300));
 
-    gl.uniform4f(colorUniformLocation, Math.random(), Math.random(), Math.random(), 1);
+    gl.uniform4f(colorUniformLocation, 0.576, 0.847, 0.890, 1);
 
     // Draw the rectangle
     var primitiveType = gl.TRIANGLES;
