@@ -20,19 +20,14 @@
     <script id="vertex-shader-2d" type="notjs">
         attribute vec2 a_Position;
 
+        uniform float u_PixelPerUnit;
         uniform vec2 u_Resolution;
 
         void main() {
-            // convert the position from pixels to 0.0 to 1.0
-            vec2 zeroToOne = a_Position / u_Resolution;
+            float clip_space_x = a_Position.x * u_PixelPerUnit / u_Resolution.x * 2.0;
+            float clip_space_y = a_Position.y * u_PixelPerUnit / u_Resolution.y * 2.0;
 
-            // convert from 0->1 to 0->2
-            vec2 zeroToTwo = zeroToOne * 2.0;
-
-            // convert from 0->2 to -1->+1 (clipspace)
-            vec2 clipSpace = zeroToTwo - 1.0;
-
-            gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
+            gl_Position = vec4(clip_space_x, clip_space_y, 0.0, 1.0);
         }
     </script>
     <script id="fragment-shader-2d" type="notjs">
