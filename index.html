@@ -4,11 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chader : 2D WebGL Project</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
     <link rel="icon" href="./public/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="./styles/main.css">
 </head>
 <body>
-    <canvas id="webgl-canvas" width="500" height="500"/>
+    <canvas id="webgl-canvas" width="500" height="500"></canvas>
+    <div id="controls">
+        <h1 id="controlTitle">Controls</h1>
+    </div>
 
     <!-- SHADER SECTION -->
     <script id="vertex-shader-2d" type="notjs">
@@ -41,6 +47,7 @@
     
     <!-- Javascript Files -->
     <script src="./dist/utils/shaderUtils.js"></script>
+    <script src="./dist/ui.js"></script>
     <script src="./dist/main.js"></script>
 </body>
 </html>
