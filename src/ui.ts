@@ -8,17 +8,24 @@ export interface SliderOptions {
 }
 
 
-const container = document.getElementById("controls");
-if (!container) {
-    throw new Error("Could not find container");
-}
+// const container = document.getElementById("controls");
+// if (!container) {
+//     throw new Error("Could not find container");
+// }
 
 export const chaderUI = {
     setupSlider,
-    setHeader
+    setHeader,
+    setDropdown
 }
 
-function setupSlider(id : string, title : string, options : SliderOptions) {
+function setupSlider(id : string, title : string, options : SliderOptions, containerId : string) {
+
+    const container = document.getElementById(containerId);
+    if (!container) {
+        throw new Error("Could not find container :" + containerId);
+    }
+
     const label = document.createElement("label");
     label.htmlFor = id;
     label.innerText = title;
@@ -59,9 +66,40 @@ function setupSlider(id : string, title : string, options : SliderOptions) {
     container?.appendChild(sliderContainer);
 }   
 
-function setHeader(title : string) {
+function setHeader(title : string, containerId : string) {
+
+    const container = document.getElementById(containerId);
+    if (!container) {
+        throw new Error("Could not find container:" + containerId);
+    }
+
     const header = document.createElement("h2");
     header.innerText = title;
 
     container?.appendChild(header);
+}
+
+function setDropdown(id : string, title : string, options : string[], containerId : string) {
+
+    const container = document.getElementById(containerId);
+    if (!container) {
+        throw new Error("Could not find container:" + containerId);
+    }
+
+    const label = document.createElement("label");
+    label.htmlFor = id;
+    label.innerText = title;
+
+    const select = document.createElement("select");
+    select.id = id;
+
+    options.forEach(option => {
+        const optionElement = document.createElement("option");
+        optionElement.value = option;
+        optionElement.text = option;
+        select.appendChild(optionElement);
+    });
+
+    label.appendChild(select);
+    container.appendChild(label);
 }

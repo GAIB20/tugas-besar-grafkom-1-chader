@@ -1,3 +1,4 @@
+import { setLine } from "./shape/line.js";
 import { setRectangle } from "./shape/rectangle.js";
 import { chaderUI } from "./ui.js";
 import { matrixTransformer } from "./utils/chaderM3.js";
@@ -23,29 +24,30 @@ function resizeCanvasToDisplaySize() {
     }
 }
 
-function basicTransformationUI(gl : WebGL2RenderingContext, program : WebGLProgram, positionAttributeLocation : number, positionBuffer : WebGLBuffer | null) {
-    chaderUI.setHeader('Basic Transformation');
-    chaderUI.setupSlider('tx', 'Position-x', { value: 0, min: -15, max: 15, slide: (value) => { 
-        translation[0] = value;
-        drawScene(gl, program, positionAttributeLocation, positionBuffer);
-    }, step: 0.01});
-    chaderUI.setupSlider('ty', 'Position-y', { value: 0, min: -15, max: 15, slide: (value) => { 
-        translation[1] = value;
-        drawScene(gl, program, positionAttributeLocation, positionBuffer);
-    }, step: 0.01});
-    chaderUI.setupSlider('sx', 'Scale-x', { value: 1, min: -10, max: 10, slide: (value) => { 
-        scale[0] = value;
-        drawScene(gl, program, positionAttributeLocation, positionBuffer);
-    }, step: 0.01});
-    chaderUI.setupSlider('sy', 'Scale-y', { value: 1, min: -10, max: 10, slide: (value) => { 
-        scale[1] = value;
-        drawScene(gl, program, positionAttributeLocation, positionBuffer);
-    }, step: 0.01});
-    chaderUI.setupSlider('angle', 'Angle', { value: 0, min: 0, max: 360, slide: (value) => {
-        angleInRadians = value * Math.PI / 180;
-        drawScene(gl, program, positionAttributeLocation, positionBuffer);
-    }});
-}
+// function basicTransformationUI(gl : WebGL2RenderingContext, program : WebGLProgram, positionAttributeLocation : number, positionBuffer : WebGLBuffer | null) {
+//     chaderUI.setHeader('Basic Transformation', 'controls');
+
+//     chaderUI.setupSlider('tx', 'Position-x', { value: 0, min: -15, max: 15, slide: (value) => { 
+//         translation[0] = value;
+//         drawScene(gl, program, positionAttributeLocation, positionBuffer);
+//     }, step: 0.01}, 'controls');
+//     chaderUI.setupSlider('ty', 'Position-y', { value: 0, min: -15, max: 15, slide: (value) => { 
+//         translation[1] = value;
+//         drawScene(gl, program, positionAttributeLocation, positionBuffer);
+//     }, step: 0.01}, 'controls');
+//     chaderUI.setupSlider('sx', 'Scale-x', { value: 1, min: -10, max: 10, slide: (value) => { 
+//         scale[0] = value;
+//         drawScene(gl, program, positionAttributeLocation, positionBuffer);
+//     }, step: 0.01}, 'controls');
+//     chaderUI.setupSlider('sy', 'Scale-y', { value: 1, min: -10, max: 10, slide: (value) => { 
+//         scale[1] = value;
+//         drawScene(gl, program, positionAttributeLocation, positionBuffer);
+//     }, step: 0.01}, 'controls');
+//     chaderUI.setupSlider('angle', 'Angle', { value: 0, min: 0, max: 360, slide: (value) => {
+//         angleInRadians = value * Math.PI / 180;
+//         drawScene(gl, program, positionAttributeLocation, positionBuffer);
+//     }}, 'controls');
+// }
 
 function main() {
     // Get the canvas element
@@ -89,7 +91,10 @@ function main() {
     const positionAttributeLocation = gl.getAttribLocation(program, 'a_Position');
     const positionBuffer = gl.createBuffer();
 
-    basicTransformationUI(gl, program, positionAttributeLocation, positionBuffer);
+    // document.addEventListener('DOMContentLoaded', () => {
+    //     basicTransformationUI(gl, program, positionAttributeLocation, positionBuffer);
+    // });
+
 
     window.addEventListener('resize', () => {
         console.log('resize');
@@ -140,10 +145,11 @@ function drawScene(gl : WebGL2RenderingContext, program : WebGLProgram, position
     const colorUniformLocation = gl.getUniformLocation(program, 'u_Color');
     gl.uniform4f(colorUniformLocation, 0.576, 0.847, 0.890, 1);
 
-    setRectangle(gl, 0, 0, 10, 10);
+    // setRectangle(gl, 0, 0, 10, 10);
+    setLine(gl, -10, -10, 10, 10);
 
     // Draw the rectangle
-    var primitiveType = gl.TRIANGLES;
+    var primitiveType = gl.LINES;
     var offset = 0;
     var count = 6;
     gl.drawArrays(primitiveType, offset, count);
