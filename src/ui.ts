@@ -1,4 +1,4 @@
-export interface SliderOptions {
+    export interface SliderOptions {
     value?: number;
     min?: number;
     max?: number;
