@@ -18,17 +18,17 @@ function setActiveObject(obj : Geometry<any>) {
     ActiveObject.onObjectSelected();
 }
 
-function createObject(gl : WebGL2RenderingContext, program : WebGLProgram, posAttribLocation : number, positionBuffer : WebGLBuffer | null, colorsLocation : number) {
+function createObject(gl : WebGL2RenderingContext, program : WebGLProgram, posAttribLocation : number, colorsLocation : number) {
     switch (SelectedTypeToCreate.getGeometryType()) {
         case (GeometryType.RECTANGLE) : {
-            const instance = new Rectangle(gl, program, posAttribLocation, GeometryParams);
+            const instance = new Rectangle(gl, program, posAttribLocation, colorsLocation, GeometryParams);
             ObjectsInScene.push(instance);
             setActiveObject(instance);
             break;
         }
     }
 
-    drawScene(gl, program, posAttribLocation, positionBuffer, colorsLocation);
+    drawScene(gl, program, posAttribLocation, colorsLocation);
 }
 
 export function resizeCanvasToDisplaySize() {
@@ -94,7 +94,6 @@ function main() {
 
     // Setup Position Buffer
     const positionAttributeLocation = gl.getAttribLocation(program, 'a_Position');
-    const positionBuffer = gl.createBuffer();
     const colorsLocation = gl.getAttribLocation(program, "a_Color");
     
     document.getElementById('button_generate')?.addEventListener('click', () => {
@@ -112,7 +111,7 @@ function main() {
             }
         }
 
-        createObject(gl, program, positionAttributeLocation, positionBuffer, colorsLocation);
+        createObject(gl, program, positionAttributeLocation, colorsLocation);
         
     });
 
@@ -125,10 +124,10 @@ function main() {
     gl.clearColor(0.118, 0.125, 0.188, 1.0); // dark blue background
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    drawScene(gl, program, positionAttributeLocation, positionBuffer, colorsLocation);
+    drawScene(gl, program, positionAttributeLocation, colorsLocation);
 }
 
-function drawScene(gl : WebGL2RenderingContext, program : WebGLProgram, positionAttributeLocation : number, positionBuffer : WebGLBuffer | null, colorsLocation : number) {
+export function drawScene(gl : WebGL2RenderingContext, program : WebGLProgram, positionAttributeLocation : number, colorsLocation : number) {
     resizeCanvasToDisplaySize();
 
     // Set the viewport

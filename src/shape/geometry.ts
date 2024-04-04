@@ -20,15 +20,17 @@ export abstract class Geometry<T> {
     protected gl : WebGL2RenderingContext;
     protected program : WebGLProgram;
     protected posAttribLocation : number;
+    protected colorAttribLocation : number;
     protected vBuffer : WebGLBuffer | null;
 
-    constructor(gl : WebGL2RenderingContext, program : WebGLProgram, posAttribLocation : number) {
+    constructor(gl : WebGL2RenderingContext, program : WebGLProgram, posAttribLocation : number, colorAttribLocation : number) {
         Geometry.numOfObjects += 1;
 
         this.id = Geometry.numOfObjects;
         this.gl = gl;
         this.program = program;
         this.posAttribLocation = posAttribLocation;
+        this.colorAttribLocation = colorAttribLocation;
 
         this.vBuffer = gl.createBuffer();
 

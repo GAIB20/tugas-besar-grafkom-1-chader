@@ -37,29 +37,29 @@ export class Rectangle extends Geometry<RectangleParams> {
     public callbacks : TransformationCallbacks = {
         onTranslateX: (value) => {
             this.translation[0] = value;
-            drawScene(this.gl, this.program, this.posAttribLocation);
+            drawScene(this.gl, this.program, this.posAttribLocation, this.colorAttribLocation);
         },
         onTranslateY: (value) => {
             this.translation[1] = value;
-            drawScene(this.gl, this.program, this.posAttribLocation);
+            drawScene(this.gl, this.program, this.posAttribLocation, this.colorAttribLocation);
         },
         onScaleX: (value) => {
             this.scale[0] = value;
-            drawScene(this.gl, this.program, this.posAttribLocation);
+            drawScene(this.gl, this.program, this.posAttribLocation, this.colorAttribLocation);
         },
         onScaleY: (value) => {
             this.scale[1] = value;
-            drawScene(this.gl, this.program, this.posAttribLocation);
+            drawScene(this.gl, this.program, this.posAttribLocation, this.colorAttribLocation);
         },
         onRotate: (value) => {
             const radians = value * Math.PI / 180;
             this.angleInRadians = radians;
-            drawScene(this.gl, this.program, this.posAttribLocation);
+            drawScene(this.gl, this.program, this.posAttribLocation, this.colorAttribLocation);
         }
     }
 
-    constructor(gl : WebGL2RenderingContext, program : WebGLProgram, posAttribLocation : number, params : RectangleParams) {
-        super(gl, program, posAttribLocation);
+    constructor(gl : WebGL2RenderingContext, program : WebGLProgram, posAttribLocation : number, colorAttribLocation : number, params : RectangleParams) {
+        super(gl, program, posAttribLocation, colorAttribLocation);
         const {x, y, width, height} = params;
         this.x = x;
         this.y = y;
