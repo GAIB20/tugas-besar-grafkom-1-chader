@@ -1,4 +1,4 @@
-import { setHeader, setupSlider } from "./ui.js";
+import { setRectangle, setRectangleUI } from "./shape/rectangle.js";
 import { createProgram, createShader } from "./utils/shaderUtils.js";
 
 function resizeCanvasToDisplaySize() {
@@ -55,18 +55,22 @@ function main() {
         return;
     }
 
-    setHeader('Transformation');
-    setupSlider('x', 'Position-x', { value: 0, min: 0, max: 300, slide: (value) => { 
-        console.log(value);
-    }});
-    setupSlider('y', 'Position-y', { value: 0, min: 0, max: 300, slide: (value) => { 
-        console.log(value);
-    }});
+    setRectangleUI();
+    setRectangle(gl, 0, 0, 10, 10);
 
     // Setup Position Buffer
     const positionAttributeLocation = gl.getAttribLocation(program, 'a_Position');
     const positionBuffer = gl.createBuffer();
 
+    window.addEventListener('resize', () => {
+        console.log('resize');
+        drawScene(gl, program, positionAttributeLocation, positionBuffer);
+    });
+
+    drawScene(gl, program, positionAttributeLocation, positionBuffer);
+}
+
+function drawScene(gl : WebGL2RenderingContext, program : WebGLProgram, positionAttributeLocation : number, positionBuffer : WebGLBuffer | null) {
     resizeCanvasToDisplaySize();
 
     // Set the viewport
@@ -111,27 +115,5 @@ function main() {
     gl.drawArrays(primitiveType, offset, count);
 }
 
-function randomInt(range : number) {
-    return Math.floor(Math.random() * range);
-}
-
-function setRectangle(gl : WebGL2RenderingContext, x : number, y : number, width : number, height : number) {
-    const halfWidth = width / 2;
-    const halfHeight = height / 2;
-
-    const x1 = x - halfWidth;
-    const x2 = x + halfWidth;
-    const y1 = y - halfHeight;
-    const y2 = y + halfHeight;
-
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-        x1, y1,
-        x2, y1,
-        x1, y2,
-        x1, y2,
-        x2, y1,
-        x2, y2,
-    ]), gl.STATIC_DRAW);
-}
 
 main();

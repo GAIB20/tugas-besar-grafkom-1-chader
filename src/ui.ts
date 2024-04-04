@@ -13,14 +13,24 @@ if (!container) {
     throw new Error("Could not find container");
 }
 
-export function setupSlider(id : string, title : string, options : SliderOptions) {
+export const chaderUI = {
+    setupSlider,
+    setHeader
+}
+
+function setupSlider(id : string, title : string, options : SliderOptions) {
     const label = document.createElement("label");
     label.htmlFor = id;
     label.innerText = title;
     label.className = "control-label";
     container?.appendChild(label);
 
+    const sliderContainer = document.createElement("div");
+    sliderContainer.className = "control-slider-container";
+
     const slider = document.createElement("input");
+    const value = document.createElement("span");
+
     slider.type = "range";
     slider.id = id;
     slider.className = "control-slider";
@@ -30,19 +40,26 @@ export function setupSlider(id : string, title : string, options : SliderOptions
     slider.value = (options.value || 0).toString();
     slider.oninput = () => {
         if(options.slide) {
+            value.innerText = slider.value;
             options.slide(parseFloat(slider.value));
         }
     }
     slider.onchange = () => {
         if(options.change) {
+            value.innerText = slider.value;
             options.change(parseFloat(slider.value));
         }
     }
 
-    container?.appendChild(slider);
+    value.innerText = slider.value;
+
+    sliderContainer.appendChild(slider);
+    sliderContainer.appendChild(value);
+
+    container?.appendChild(sliderContainer);
 }   
 
-export function setHeader(title : string) {
+function setHeader(title : string) {
     const header = document.createElement("h2");
     header.innerText = title;
 

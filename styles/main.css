@@ -80,3 +80,9 @@ html, body {
     outline: none;
     border: none;
 }
+
+.control-slider-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
