@@ -1,10 +1,12 @@
 import { Geometry, GeometryOption, GeometryType } from "./shape/geometry.js";
 import { Rectangle, RectangleOption } from "./shape/rectangle.js";
+import { Polygon, PolygonOption } from "./shape/polygon.js";
 import { createProgram, createShader } from "./utils/shaderUtils.js";
 import { chaderUI } from "./ui.js";
 
 const TypeToCreateOptions = {
-    RectangleOption
+    RectangleOption,
+    PolygonOption
 }
 var SelectedTypeToCreate : GeometryOption
 var GeometryParams : any;
@@ -22,6 +24,12 @@ function createObject(gl : WebGL2RenderingContext, program : WebGLProgram, posAt
     switch (SelectedTypeToCreate.getGeometryType()) {
         case (GeometryType.RECTANGLE) : {
             const instance = new Rectangle(gl, program, posAttribLocation, colorsLocation, GeometryParams);
+            ObjectsInScene.push(instance);
+            setActiveObject(instance);
+            break;
+        }
+        case (GeometryType.POLYGON) : {
+            const instance = new Polygon(gl, program, posAttribLocation, colorsLocation, GeometryParams);
             ObjectsInScene.push(instance);
             setActiveObject(instance);
             break;
@@ -106,6 +114,13 @@ function main() {
                 SelectedTypeToCreate = RectangleOption;
                 GeometryParams = {
                     x : 0, y : 0, width : 10, height: 10
+                }
+                break;
+            }
+            case 'polygon' : {
+                SelectedTypeToCreate = PolygonOption;
+                GeometryParams = {
+                    x : 0, y : 0, sidesLength : 10, sides: 10
                 }
                 break;
             }
