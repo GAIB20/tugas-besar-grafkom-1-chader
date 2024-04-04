@@ -113,3 +113,7 @@ html, body {
     margin-bottom: 10px;
     font-size: 0.95rem;
 }
+
+.control-group {
+    margin: 1rem 0;
+}

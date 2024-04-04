@@ -133,10 +133,31 @@ export class Rectangle extends Geometry<RectangleParams> {
     }
 
     onObjectSelected(): void {
+        const shapeControlGroup = document.createElement("div");
+        shapeControlGroup.id = "shape-control-group";
+        shapeControlGroup.className = "control-group";
+
+        const controls = document.getElementById("controls");
+        controls?.appendChild(shapeControlGroup);
+
+        chaderUI.setHeader("Rectangle", "shape-control-group");
+        chaderUI.setupSlider("rw", "Width", { min: 0, max: 30, step: 0.01, value: this.width, slide : (value) => {
+            this.width = value;
+            drawScene(this.gl, this.program, this.posAttribLocation, this.colorAttribLocation);
+        }}, "shape-control-group");
+
+        chaderUI.setupSlider("rh", "Height", { min: 0, max: 30, step: 0.01, value: this.height, slide : (value) => {
+            this.height = value;
+            drawScene(this.gl, this.program, this.posAttribLocation, this.colorAttribLocation);
+        }}, "shape-control-group");
+
         chaderUI.setupTrasformControls(this.callbacks);
     }
 
     onObjectDeselected(): void {
+        const shapeControlGroup = document.getElementById("shape-control-group");
+        shapeControlGroup?.remove();
+
         chaderUI.cleanTransformControls();
     }
 }
