@@ -72,14 +72,23 @@ export class Square extends Geometry<SquareParams> {
         const y1 = this.y - halfSideLength;
         const y2 = this.y + halfSideLength;
 
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+        const vertices = [
             x1, y1, 0.576, 0.847, 0.890,
             x2, y1, 0.576, 0.847, 0.890,
             x1, y2, 0.576, 0.847, 0.890,
-            x1, y2, 0.576, 0.847, 0.890,
-            x2, y1, 0.576, 0.847, 0.890,
             x2, y2, 0.576, 0.847, 0.890,
-        ]), gl.STATIC_DRAW);
+        ]
+
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
+        const indices = [
+            0, 1, 2,
+            2, 1, 3
+        ]
+
+        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.iBuffer);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
     }
 
     drawGeometry() : void {
@@ -125,7 +134,7 @@ export class Square extends Geometry<SquareParams> {
         var primitiveType = this.gl.TRIANGLES;
         var offset = 0;
         var count = 6;
-        this.gl.drawArrays(primitiveType, offset, count);
+        this.gl.drawElements(primitiveType, count, this.gl.UNSIGNED_SHORT, offset);
     }
 
     onObjectSelected(): void {
