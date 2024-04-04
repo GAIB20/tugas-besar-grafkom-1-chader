@@ -32,8 +32,11 @@ export function setPolygon(gl : WebGL2RenderingContext, x : number, y : number, 
     const finalArray: number[] = [];
     for (let i = 0; i < sides; i++) {
         finalArray.push(translatedVertices[i][0], translatedVertices[i][1]);
+        finalArray.push(0.576, 0.847, 0.890);
         finalArray.push(translatedVertices[(i+1)%sides][0], translatedVertices[(i+1)%sides][1]);
+        finalArray.push(0.576, 0.847, 0.890);
         finalArray.push(x, y);
+        finalArray.push(0.576, 0.847, 0.890);
     }
 
     console.log("tes", finalArray);

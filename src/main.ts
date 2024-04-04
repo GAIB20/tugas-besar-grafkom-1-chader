@@ -24,27 +24,27 @@ function resizeCanvasToDisplaySize() {
     }
 }
 
-function basicTransformationUI(gl : WebGL2RenderingContext, program : WebGLProgram, positionAttributeLocation : number, positionBuffer : WebGLBuffer | null) {
+function basicTransformationUI(gl : WebGL2RenderingContext, program : WebGLProgram, positionAttributeLocation : number, positionBuffer : WebGLBuffer | null, colorsLocation : number) {
     chaderUI.setHeader('Basic Transformation');
     chaderUI.setupSlider('tx', 'Position-x', { value: 0, min: -15, max: 15, slide: (value) => { 
         translation[0] = value;
-        drawScene(gl, program, positionAttributeLocation, positionBuffer);
+        drawScene(gl, program, positionAttributeLocation, positionBuffer, colorsLocation);
     }, step: 0.01});
     chaderUI.setupSlider('ty', 'Position-y', { value: 0, min: -15, max: 15, slide: (value) => { 
         translation[1] = value;
-        drawScene(gl, program, positionAttributeLocation, positionBuffer);
+        drawScene(gl, program, positionAttributeLocation, positionBuffer, colorsLocation);
     }, step: 0.01});
     chaderUI.setupSlider('sx', 'Scale-x', { value: 1, min: -10, max: 10, slide: (value) => { 
         scale[0] = value;
-        drawScene(gl, program, positionAttributeLocation, positionBuffer);
+        drawScene(gl, program, positionAttributeLocation, positionBuffer, colorsLocation);
     }, step: 0.01});
     chaderUI.setupSlider('sy', 'Scale-y', { value: 1, min: -10, max: 10, slide: (value) => { 
         scale[1] = value;
-        drawScene(gl, program, positionAttributeLocation, positionBuffer);
+        drawScene(gl, program, positionAttributeLocation, positionBuffer, colorsLocation);
     }, step: 0.01});
     chaderUI.setupSlider('angle', 'Angle', { value: 0, min: 0, max: 360, slide: (value) => {
         angleInRadians = value * Math.PI / 180;
-        drawScene(gl, program, positionAttributeLocation, positionBuffer);
+        drawScene(gl, program, positionAttributeLocation, positionBuffer, colorsLocation);
     }});
 }
 
@@ -89,18 +89,19 @@ function main() {
     // Setup Position Buffer
     const positionAttributeLocation = gl.getAttribLocation(program, 'a_Position');
     const positionBuffer = gl.createBuffer();
-
-    basicTransformationUI(gl, program, positionAttributeLocation, positionBuffer);
+    const colorsLocation = gl.getAttribLocation(program, "a_Color");
+    
+    basicTransformationUI(gl, program, positionAttributeLocation, positionBuffer, colorsLocation);
 
     window.addEventListener('resize', () => {
         console.log('resize');
-        drawScene(gl, program, positionAttributeLocation, positionBuffer);
+        drawScene(gl, program, positionAttributeLocation, positionBuffer, colorsLocation);
     });
 
-    drawScene(gl, program, positionAttributeLocation, positionBuffer);
+    drawScene(gl, program, positionAttributeLocation, positionBuffer, colorsLocation);
 }
 
-function drawScene(gl : WebGL2RenderingContext, program : WebGLProgram, positionAttributeLocation : number, positionBuffer : WebGLBuffer | null) {
+function drawScene(gl : WebGL2RenderingContext, program : WebGLProgram, positionAttributeLocation : number, positionBuffer : WebGLBuffer | null, colorsLocation : number) {
     resizeCanvasToDisplaySize();
 
     // Set the viewport
@@ -114,15 +115,24 @@ function drawScene(gl : WebGL2RenderingContext, program : WebGLProgram, position
     gl.useProgram(program);
 
     // Tell the attribute how to get data out of the buffer
-    gl.enableVertexAttribArray(positionAttributeLocation);
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    gl.enableVertexAttribArray(positionAttributeLocation);
+    console.log("tes: ", positionAttributeLocation);
 
     var size = 2;             // 2 components per iteration
     var type = gl.FLOAT;      // the data is 32bit floats
     var normalize = false;    // don't normalize the data
-    var stride = 0;           // 0 = move forward size * sizeof(type) each iteration to get the next position
+    var stride = 5 * Float32Array.BYTES_PER_ELEMENT;           // 0 = move forward size * sizeof(type) each iteration to get the next position
     var offset = 0;           // start at the beginning of the buffer
     gl.vertexAttribPointer(positionAttributeLocation, size, type, normalize, stride, offset);
+    
+    // Color buffer
+    gl.enableVertexAttribArray(colorsLocation);
+    console.log("tes: ", colorsLocation);
+
+    var size = 3;             // 2 components per iteration
+    var offset = 2 * Float32Array.BYTES_PER_ELEMENT;           // start at the beginning of the buffer
+    gl.vertexAttribPointer(colorsLocation, size, type, normalize, stride, offset);
 
     // Compute matrix
     var matrix = matrixTransformer.identity();
