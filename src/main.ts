@@ -1,12 +1,15 @@
 import { Geometry, GeometryOption, GeometryType } from "./shape/geometry.js";
 import { Rectangle, RectangleOption } from "./shape/rectangle.js";
 import { Polygon, PolygonOption } from "./shape/polygon.js";
+import { Square, SquareOption } from "./shape/square.js";
+
 import { createProgram, createShader } from "./utils/shaderUtils.js";
 import { chaderUI } from "./ui.js";
 
 const TypeToCreateOptions = {
     RectangleOption,
-    PolygonOption
+    PolygonOption,
+    SquareOption
 }
 var SelectedTypeToCreate : GeometryOption
 var GeometryParams : any;
@@ -21,22 +24,45 @@ function setActiveObject(obj : Geometry<any>) {
 }
 
 function createObject(gl : WebGL2RenderingContext, program : WebGLProgram, posAttribLocation : number, colorsLocation : number) {
+    
+    var instance : Geometry<any>;
+    var idNumber : number;
     switch (SelectedTypeToCreate.getGeometryType()) {
         case (GeometryType.RECTANGLE) : {
-            const instance = new Rectangle(gl, program, posAttribLocation, colorsLocation, GeometryParams);
+            instance = new Rectangle(gl, program, posAttribLocation, colorsLocation, GeometryParams);
+            chaderUI.addOptionToDropdown('shape-dropdown', instance.id.toString());
             ObjectsInScene.push(instance);
             setActiveObject(instance);
+            var idNumber = instance.id;
             break;
         }
         case (GeometryType.POLYGON) : {
-            const instance = new Polygon(gl, program, posAttribLocation, colorsLocation, GeometryParams);
+            instance = new Polygon(gl, program, posAttribLocation, colorsLocation, GeometryParams);
+            chaderUI.addOptionToDropdown('shape-dropdown', instance.id.toString());
             ObjectsInScene.push(instance);
             setActiveObject(instance);
+            var idNumber = instance.id;
             break;
+        } 
+        case (GeometryType.SQUARE) : {
+            instance = new Square(gl, program, posAttribLocation, colorsLocation, GeometryParams);
+            chaderUI.addOptionToDropdown('shape-dropdown', instance.id.toString());
+            ObjectsInScene.push(instance);
+            setActiveObject(instance);
+            var idNumber = instance.id;
+            break;
+        } 
+        default : {
+            idNumber = -1;
         }
     }
-
+    changeSelectedObjectUi(idNumber);
     drawScene(gl, program, posAttribLocation, colorsLocation);
+}
+
+function changeSelectedObjectUi(id : number) {
+    var dropdown = document.getElementById('shape-dropdown') as HTMLSelectElement;
+    dropdown.value = id.toString();
 }
 
 export function resizeCanvasToDisplaySize() {
@@ -61,7 +87,6 @@ function main() {
     chaderUI.setDropdown('shape-dropdown', 'Instance: ', [], 'controls', (value) => {
         console.log('Selected: ' + value);
     });
-
 
     // Get the canvas element
     const canvas = document.querySelector('#webgl-canvas') as HTMLCanvasElement;
@@ -113,14 +138,21 @@ function main() {
             case 'rectangle': {
                 SelectedTypeToCreate = RectangleOption;
                 GeometryParams = {
-                    x : 0, y : 0, width : 10, height: 10
+                    x : 0, y : 0, width : 12, height: 8
                 }
                 break;
             }
             case 'polygon' : {
                 SelectedTypeToCreate = PolygonOption;
                 GeometryParams = {
-                    x : 0, y : 0, sideLength : 10, sides: 10
+                    x : 0, y : 0, sidesLength : 10, sides : 10
+                }
+                break;
+            }
+            case 'square' : {
+                SelectedTypeToCreate = SquareOption;
+                GeometryParams = {
+                    x : 0, y : 0, sideLength : 10
                 }
                 break;
             }
@@ -130,6 +162,19 @@ function main() {
         
     });
 
+    document.getElementById('shape-dropdown')?.addEventListener('change', (event) => {
+        var selected = event.target as HTMLSelectElement;
+        var selectedValue = selected.value;
+        console.log("Selected: " + selectedValue);
+        changeActiveObjectById(parseInt(selectedValue));
+        
+    });
+
+    window.addEventListener('resize', () => {
+        resizeCanvasToDisplaySize();
+        drawScene(gl, program, positionAttributeLocation, colorsLocation);
+    });
+    
     resizeCanvasToDisplaySize();
 
     // Set the viewport
@@ -158,5 +203,13 @@ export function drawScene(gl : WebGL2RenderingContext, program : WebGLProgram, p
     }
 }
 
+function changeActiveObjectById(id : number) {
+    for (const obj of ObjectsInScene) {
+        if (obj.id === id) {
+            setActiveObject(obj);
+            return;
+        }
+    }
+}
 
 main();

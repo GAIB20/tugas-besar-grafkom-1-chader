@@ -3,20 +3,19 @@ import { chaderUI, TransformationCallbacks } from "../ui.js";
 import { matrixTransformer } from "../utils/chaderM3.js";
 import { Geometry, GeometryOption, GeometryType } from "./geometry.js";
 
-interface RectangleParams {
+interface SquareParams {
     x : number, 
     y : number,
-    width : number, 
-    height : number
+    sideLength : number, 
 }
 
-export const RectangleOption : GeometryOption = {
+export const SquareOption : GeometryOption = {
     getGeometryType() {
-        return GeometryType.RECTANGLE;
+        return GeometryType.SQUARE;
     },
 
     getShapeName() {
-        return "Rectangle";
+        return "Square";
     },
 
     onPrepareObject() {
@@ -28,11 +27,10 @@ export const RectangleOption : GeometryOption = {
     },
 }
 
-export class Rectangle extends Geometry<RectangleParams> {
+export class Square extends Geometry<SquareParams> {
     public x : number;
     public y : number;
-    public width : number;
-    public height : number;
+    public sideLength : number;
 
     public callbacks : TransformationCallbacks = {
         onTranslateX: (value) => {
@@ -58,41 +56,30 @@ export class Rectangle extends Geometry<RectangleParams> {
         }
     }
 
-    constructor(gl : WebGL2RenderingContext, program : WebGLProgram, posAttribLocation : number, colorAttribLocation : number, params : RectangleParams) {
+    constructor(gl : WebGL2RenderingContext, program : WebGLProgram, posAttribLocation : number, colorAttribLocation : number, params : SquareParams) {
         super(gl, program, posAttribLocation, colorAttribLocation);
-        const {x, y, width, height} = params;
+        const { x, y, sideLength } = params;
         this.x = x;
         this.y = y;
-        this.width = width;
-        this.height = height;
+        this.sideLength = sideLength;
     }
 
     setGeometry(gl : WebGL2RenderingContext) : void {
-        const halfWidth = this.width / 2;
-        const halfHeight = this.height / 2;
+        const halfSideLength = this.sideLength / 2;
 
-        const x1 = this.x - halfWidth;
-        const x2 = this.x + halfWidth;
-        const y1 = this.y - halfHeight;
-        const y2 = this.y + halfHeight;
+        const x1 = this.x - halfSideLength;
+        const x2 = this.x + halfSideLength;
+        const y1 = this.y - halfSideLength;
+        const y2 = this.y + halfSideLength;
 
-        const vertices = [
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
             x1, y1, 0.576, 0.847, 0.890,
             x2, y1, 0.576, 0.847, 0.890,
             x1, y2, 0.576, 0.847, 0.890,
+            x1, y2, 0.576, 0.847, 0.890,
+            x2, y1, 0.576, 0.847, 0.890,
             x2, y2, 0.576, 0.847, 0.890,
-        ]
-
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-
-        const indices = [
-            0, 1, 2,
-            2, 1, 3
-        ]
-
-        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.iBuffer);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+        ]), gl.STATIC_DRAW);
     }
 
     drawGeometry() : void {
@@ -136,8 +123,9 @@ export class Rectangle extends Geometry<RectangleParams> {
 
         // Draw the rectanthis.gle
         var primitiveType = this.gl.TRIANGLES;
+        var offset = 0;
         var count = 6;
-        this.gl.drawElements(primitiveType, count, this.gl.UNSIGNED_SHORT, 0);
+        this.gl.drawArrays(primitiveType, offset, count);
     }
 
     onObjectSelected(): void {
@@ -148,14 +136,9 @@ export class Rectangle extends Geometry<RectangleParams> {
         const controls = document.getElementById("controls");
         controls?.appendChild(shapeControlGroup);
 
-        chaderUI.setHeader("Rectangle Properties", "shape-control-group");
-        chaderUI.setupSlider("rw", "Width", { min: 0, max: 30, step: 0.01, value: this.width, slide : (value) => {
-            this.width = value;
-            drawScene(this.gl, this.program, this.posAttribLocation, this.colorAttribLocation);
-        }}, "shape-control-group");
-
-        chaderUI.setupSlider("rh", "Height", { min: 0, max: 30, step: 0.01, value: this.height, slide : (value) => {
-            this.height = value;
+        chaderUI.setHeader("Square Properties", "shape-control-group");
+        chaderUI.setupSlider("ssl", "Side Length", { min: 0, max: 30, step: 0.01, value: this.sideLength, slide : (value) => {
+            this.sideLength = value;
             drawScene(this.gl, this.program, this.posAttribLocation, this.colorAttribLocation);
         }}, "shape-control-group");
 

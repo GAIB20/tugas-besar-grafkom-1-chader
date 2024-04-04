@@ -21,7 +21,8 @@ export const chaderUI = {
     setHeader,
     setDropdown,
     setupTrasformControls,
-    cleanTransformControls
+    cleanTransformControls,
+    addOptionToDropdown
 }
 
 function setupSlider(id : string, title : string, options : SliderOptions, containerId : string) {

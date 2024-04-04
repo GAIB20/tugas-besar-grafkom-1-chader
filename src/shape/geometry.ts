@@ -21,7 +21,9 @@ export abstract class Geometry<T> {
     protected program : WebGLProgram;
     protected posAttribLocation : number;
     protected colorAttribLocation : number;
+
     protected vBuffer : WebGLBuffer | null;
+    protected iBuffer : WebGLBuffer | null;
 
     constructor(gl : WebGL2RenderingContext, program : WebGLProgram, posAttribLocation : number, colorAttribLocation : number) {
         Geometry.numOfObjects += 1;
@@ -33,7 +35,7 @@ export abstract class Geometry<T> {
         this.colorAttribLocation = colorAttribLocation;
 
         this.vBuffer = gl.createBuffer();
-
+        this.iBuffer = gl.createBuffer();
     }
 
     abstract setGeometry   // Fill the buffer data
