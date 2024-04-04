@@ -132,6 +132,6 @@ export class Rectangle extends Geometry<RectangleParams> {
     }
 
     onObjectDeselected(): void {
-        
+        chaderUI.cleanTransformControls();
     }
 }
