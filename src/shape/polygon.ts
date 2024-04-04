@@ -6,7 +6,7 @@ import { Geometry, GeometryOption, GeometryType } from "./geometry.js";
 interface PolygonParams {
     x : number,
     y : number,
-    sidesLength : number,
+    sideLength : number,
     sides : number
 }
 
@@ -31,7 +31,7 @@ export const PolygonOption : GeometryOption = {
 export class Polygon extends Geometry<PolygonParams> {
     public x : number;
     public y : number;
-    public sidesLength : number;
+    public sideLength : number;
     public sides : number;
 
 
@@ -61,10 +61,10 @@ export class Polygon extends Geometry<PolygonParams> {
 
     constructor(gl : WebGL2RenderingContext, program : WebGLProgram, posAttribLocation : number, colorAttribLocation : number, params : PolygonParams) {
         super(gl, program, posAttribLocation, colorAttribLocation);
-        const {x, y, sidesLength, sides} = params;
+        const {x, y, sideLength, sides} = params;
         this.x = x;
         this.y = y;
-        this.sidesLength = sidesLength;
+        this.sideLength = sideLength;
         this.sides = sides;
     }
 
@@ -73,8 +73,8 @@ export class Polygon extends Geometry<PolygonParams> {
 
         const vertices: [number, number][] = []
         for (let i = 0; i < this.sides; i++) {
-            const tempX = this.sidesLength * Math.cos((i * angle * Math.PI) / 180);
-            const tempY = this.sidesLength * Math.sin((i * angle * Math.PI) / 180);
+            const tempX = this.sideLength * Math.cos((i * angle * Math.PI) / 180);
+            const tempY = this.sideLength * Math.sin((i * angle * Math.PI) / 180);
             vertices.push([tempX, tempY]);
         }
 
@@ -87,13 +87,20 @@ export class Polygon extends Geometry<PolygonParams> {
         const translatedVertices = vertices.map(([xi, yi]) => [xi + translationX, yi + translationY]);
 
         const finalArray: number[] = [];
+        const indices: number[] = [];
+        
+        finalArray.push(this.x, this.y)
         for (let i = 0; i < this.sides; i++) {
             finalArray.push(translatedVertices[i][0], translatedVertices[i][1]);
             finalArray.push(0.576, 0.847, 0.890);
-            finalArray.push(translatedVertices[(i+1)%this.sides][0], translatedVertices[(i+1)%this.sides][1]);
-            finalArray.push(0.576, 0.847, 0.890);
-            finalArray.push(this.x, this.y);
-            finalArray.push(0.576, 0.847, 0.890);
+        }
+
+        for (let i = 1; i < this.sides; i++) {
+            if (i == this.sides-1) {
+                indices.push(0, i, 1);
+            } else {
+                indices.push(0, i, i+1);
+            }
         }
 
         console.log("tes", finalArray);

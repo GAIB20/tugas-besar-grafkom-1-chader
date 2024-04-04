@@ -120,7 +120,7 @@ function main() {
             case 'polygon' : {
                 SelectedTypeToCreate = PolygonOption;
                 GeometryParams = {
-                    x : 0, y : 0, sidesLength : 10, sides: 10
+                    x : 0, y : 0, sideLength : 10, sides: 10
                 }
                 break;
             }
