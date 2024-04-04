@@ -22,6 +22,7 @@ function createObject(gl : WebGL2RenderingContext, program : WebGLProgram, posAt
     switch (SelectedTypeToCreate.getGeometryType()) {
         case (GeometryType.RECTANGLE) : {
             const instance = new Rectangle(gl, program, posAttribLocation, colorsLocation, GeometryParams);
+            chaderUI.addOptionToDropdown('shape-dropdown', instance.id.toString());
             ObjectsInScene.push(instance);
             setActiveObject(instance);
             break;
@@ -53,6 +54,7 @@ function main() {
     chaderUI.setDropdown('shape-dropdown', 'Instance: ', [], 'controls', (value) => {
         console.log('Selected: ' + value);
     });
+
 
 
     // Get the canvas element
@@ -115,6 +117,14 @@ function main() {
         
     });
 
+    document.getElementById('shape-dropdown')?.addEventListener('change', (event) => {
+        var selected = event.target as HTMLSelectElement;
+        var selectedValue = selected.value;
+        console.log("Selected: " + selectedValue);
+        changeActiveObjectById(parseInt(selectedValue));
+        
+    });
+
     resizeCanvasToDisplaySize();
 
     // Set the viewport
@@ -140,6 +150,15 @@ export function drawScene(gl : WebGL2RenderingContext, program : WebGLProgram, p
     // Draw the objects
     for (const obj of ObjectsInScene) {
         obj.drawGeometry(gl, program, positionAttributeLocation);
+    }
+}
+
+function changeActiveObjectById(id : number) {
+    for (const obj of ObjectsInScene) {
+        if (obj.id === id) {
+            setActiveObject(obj);
+            return;
+        }
     }
 }
 
