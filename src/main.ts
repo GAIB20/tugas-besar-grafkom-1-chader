@@ -1,5 +1,11 @@
-import { setRectangle, setRectangleUI } from "./shape/rectangle.js";
+import { setRectangle } from "./shape/rectangle.js";
+import { chaderUI } from "./ui.js";
+import { matrixTransformer } from "./utils/math.js";
 import { createProgram, createShader } from "./utils/shaderUtils.js";
+
+var translation = [0, 0];
+var angleInRadians = 0;
+var scale = [1, 1];
 
 function resizeCanvasToDisplaySize() {
     const canvas = document.querySelector('#webgl-canvas') as HTMLCanvasElement;
@@ -15,6 +21,22 @@ function resizeCanvasToDisplaySize() {
         canvas.width = displayWidth;
         canvas.height = displayHeight;
     }
+}
+
+function basicTransformationUI(gl : WebGL2RenderingContext, program : WebGLProgram, positionAttributeLocation : number, positionBuffer : WebGLBuffer | null) {
+    chaderUI.setHeader('Transformation');
+    chaderUI.setupSlider('x', 'Position-x', { value: 0, min: -25, max: 25, slide: (value) => { 
+        translation[0] = value;
+        drawScene(gl, program, positionAttributeLocation, positionBuffer);
+    }});
+    chaderUI.setupSlider('y', 'Position-y', { value: 0, min: -25, max: 25, slide: (value) => { 
+        translation[1] = value;
+        drawScene(gl, program, positionAttributeLocation, positionBuffer);
+    }});
+    chaderUI.setupSlider('angle', 'Angle', { value: 0, min: 0, max: 360, slide: (value) => {
+        angleInRadians = value * Math.PI / 180;
+        drawScene(gl, program, positionAttributeLocation, positionBuffer);
+    }});
 }
 
 function main() {
@@ -55,12 +77,11 @@ function main() {
         return;
     }
 
-    setRectangleUI();
-    setRectangle(gl, 0, 0, 10, 10);
-
     // Setup Position Buffer
     const positionAttributeLocation = gl.getAttribLocation(program, 'a_Position');
     const positionBuffer = gl.createBuffer();
+
+    basicTransformationUI(gl, program, positionAttributeLocation, positionBuffer);
 
     window.addEventListener('resize', () => {
         console.log('resize');
@@ -94,19 +115,23 @@ function drawScene(gl : WebGL2RenderingContext, program : WebGLProgram, position
     var offset = 0;           // start at the beginning of the buffer
     gl.vertexAttribPointer(positionAttributeLocation, size, type, normalize, stride, offset);
 
+    // Compute matrix
+    var matrix = matrixTransformer.project(gl.canvas.width, gl.canvas.height);
+    matrix = matrixTransformer.translate(matrix, translation[0], translation[1]);
+    matrix = matrixTransformer.rotate(matrix, angleInRadians);
+    matrix = matrixTransformer.scale(matrix, scale[0], scale[1]);
+
     // Uniforms
     const resolutionUniformLocation = gl.getUniformLocation(program, 'u_Resolution');
     gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
 
-    const pixelPerUnit = 32;
-    const pixelPerUnitUniformLocation = gl.getUniformLocation(program, 'u_PixelPerUnit');
-    gl.uniform1f(pixelPerUnitUniformLocation, pixelPerUnit);
+    const matrixUniformLocation = gl.getUniformLocation(program, 'u_Matrix');
+    gl.uniformMatrix3fv(matrixUniformLocation, false, []);
 
     const colorUniformLocation = gl.getUniformLocation(program, 'u_Color');
+    gl.uniform4f(colorUniformLocation, 0.576, 0.847, 0.890, 1);
 
     setRectangle(gl, 0, 0, 10, 10);
-
-    gl.uniform4f(colorUniformLocation, 0.576, 0.847, 0.890, 1);
 
     // Draw the rectangle
     var primitiveType = gl.TRIANGLES;

@@ -11,21 +11,23 @@
     <link rel="stylesheet" href="./styles/main.css">
 </head>
 <body>
-    <canvas id="webgl-canvas" width="500" height="500"></canvas>
+    <canvas id="webgl-canvas"></canvas>
     <div id="controls">
         <h1 id="controlTitle">Controls</h1>
     </div>
 
     <!-- SHADER SECTION -->
     <script id="vertex-shader-2d" type="notjs">
+        #define PIXEL_PER_UNIT 32.0
+
         attribute vec2 a_Position;
 
-        uniform float u_PixelPerUnit;
         uniform vec2 u_Resolution;
+        uniform mat3 u_Matrix;
 
         void main() {
-            float clip_space_x = a_Position.x * u_PixelPerUnit / u_Resolution.x * 2.0;
-            float clip_space_y = a_Position.y * u_PixelPerUnit / u_Resolution.y * 2.0;
+            float clip_space_x = a_Position.x * PIXEL_PER_UNIT / u_Resolution.x * 2.0;
+            float clip_space_y = a_Position.y * PIXEL_PER_UNIT / u_Resolution.y * 2.0;
 
             gl_Position = vec4(clip_space_x, clip_space_y, 0.0, 1.0);
         }
