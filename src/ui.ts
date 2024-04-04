@@ -83,7 +83,7 @@ function setHeader(title : string, containerId : string, id? : string) {
     container?.appendChild(header);
 }
 
-function setDropdown(id : string, title : string, options : string[], containerId : string) {
+function setDropdown(id : string, title : string, options : string[], containerId : string, callback : (value : string) => void){
 
     const container = document.getElementById(containerId);
     if (!container) {
@@ -104,8 +104,25 @@ function setDropdown(id : string, title : string, options : string[], containerI
         select.appendChild(optionElement);
     });
 
+    select.addEventListener('change', (event) => {
+        const selectElement = event.target as HTMLSelectElement;
+        callback(selectElement.value);
+    });
+
     label.appendChild(select);
     container.appendChild(label);
+}
+
+function addOptionToDropdown(id : string, option : string) {
+    const select = document.getElementById(id) as HTMLSelectElement;
+    if (!select) {
+        throw new Error("Could not find dropdown with id:" + id);
+    }
+
+    const optionElement = document.createElement("option");
+    optionElement.value = option;
+    optionElement.text = option;
+    select.appendChild(optionElement);
 }
 
 function setupTrasformControls(callbacks : TransformationCallbacks) {

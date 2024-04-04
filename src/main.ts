@@ -44,35 +44,14 @@ export function resizeCanvasToDisplaySize() {
     }
 }
 
-// function basicTransformationUI(gl : WebGL2RenderingContext, program : WebGLProgram, positionAttributeLocation : number, positionBuffer : WebGLBuffer | null) {
-//     chaderUI.setHeader('Shape Properties');
-//     chaderUI.setupSlider('w', 'Panjang', { value: 0, min: -15, max: 15, slide: (value) => { 
-//         drawScene(gl, program, positionAttributeLocation, positionBuffer);
-//     }, step: 0.01});
-//     chaderUI.setHeader('Basic Transformation');
-//     chaderUI.setupSlider('tx', 'Position-x', { value: 0, min: -15, max: 15, slide: (value) => { 
-//         translation[0] = value;
-//         drawScene(gl, program, positionAttributeLocation, positionBuffer);
-//     }, step: 0.01});
-//     chaderUI.setupSlider('ty', 'Position-y', { value: 0, min: -15, max: 15, slide: (value) => { 
-//         translation[1] = value;
-//         drawScene(gl, program, positionAttributeLocation, positionBuffer);
-//     }, step: 0.01});
-//     chaderUI.setupSlider('sx', 'Scale-x', { value: 1, min: -10, max: 10, slide: (value) => { 
-//         scale[0] = value;
-//         drawScene(gl, program, positionAttributeLocation, positionBuffer);
-//     }, step: 0.01});
-//     chaderUI.setupSlider('sy', 'Scale-y', { value: 1, min: -10, max: 10, slide: (value) => { 
-//         scale[1] = value;
-//         drawScene(gl, program, positionAttributeLocation, positionBuffer);
-//     }, step: 0.01});
-//     chaderUI.setupSlider('angle', 'Angle', { value: 0, min: 0, max: 360, slide: (value) => {
-//         angleInRadians = value * Math.PI / 180;
-//         drawScene(gl, program, positionAttributeLocation, positionBuffer);
-//     }});
-// }
-
 function main() {
+    // UI STUFF
+    chaderUI.setHeader('Choose Shape Instance', 'controls');
+    chaderUI.setDropdown('shape-dropdown', 'Instance: ', [], 'controls', (value) => {
+        console.log('Selected: ' + value);
+    });
+
+
     // Get the canvas element
     const canvas = document.querySelector('#webgl-canvas') as HTMLCanvasElement;
     if (!canvas) {
@@ -123,6 +102,8 @@ function main() {
     createObject(gl, program, positionAttributeLocation);
 
     ActiveObject.drawGeometry(gl, program, positionAttributeLocation);
+
+
 
     // window.addEventListener('resize', () => {
     //     console.log('resize');
