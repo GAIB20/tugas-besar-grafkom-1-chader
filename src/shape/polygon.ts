@@ -1,16 +1,5 @@
 import { chaderUI } from "../ui.js";
 
-export function setPolygonUI() {
-    chaderUI.setHeader('Transformation');
-    chaderUI.setupSlider('x', 'Position-x', { value: 0, min: -50, max: 50, slide: (value) => { 
-        console.log(value);
-    }});
-    chaderUI.setupSlider('y', 'Position-y', { value: 0, min: -50, max: 50, slide: (value) => { 
-        console.log(value);
-    }});
-
-}
-
 export function setPolygon(gl : WebGL2RenderingContext, x : number, y : number, sidesLength : number, sides : number) {
     const angle = 360/sides;
 

@@ -7,18 +7,29 @@
     change? : (value : number) => void;
 }
 
-
-const container = document.getElementById("controls");
-if (!container) {
-    throw new Error("Could not find container");
+export interface TransformationCallbacks {
+    onTranslateX? : (value : number) => void;
+    onTranslateY? : (value : number) => void;
+    onRotate? : (value : number) => void;
+    onScaleX? : (value : number) => void;
+    onScaleY? : (value : number) => void;
 }
+
 
 export const chaderUI = {
     setupSlider,
-    setHeader
+    setHeader,
+    setDropdown,
+    setupTrasformControls
 }
 
-function setupSlider(id : string, title : string, options : SliderOptions) {
+function setupSlider(id : string, title : string, options : SliderOptions, containerId : string) {
+
+    const container = document.getElementById(containerId);
+    if (!container) {
+        throw new Error("Could not find container :" + containerId);
+    }
+
     const label = document.createElement("label");
     label.htmlFor = id;
     label.innerText = title;
@@ -59,9 +70,77 @@ function setupSlider(id : string, title : string, options : SliderOptions) {
     container?.appendChild(sliderContainer);
 }   
 
-function setHeader(title : string) {
+function setHeader(title : string, containerId : string, id? : string) {
+
+    const container = document.getElementById(containerId);
+    if (!container) {
+        throw new Error("Could not find container:" + containerId);
+    }
+
     const header = document.createElement("h2");
     header.innerText = title;
 
     container?.appendChild(header);
+}
+
+function setDropdown(id : string, title : string, options : string[], containerId : string, callback : (value : string) => void){
+
+    const container = document.getElementById(containerId);
+    if (!container) {
+        throw new Error("Could not find container:" + containerId);
+    }
+
+    const label = document.createElement("label");
+    label.htmlFor = id;
+    label.innerText = title;
+
+    const select = document.createElement("select");
+    select.id = id;
+
+    options.forEach(option => {
+        const optionElement = document.createElement("option");
+        optionElement.value = option;
+        optionElement.text = option;
+        select.appendChild(optionElement);
+    });
+
+    select.addEventListener('change', (event) => {
+        const selectElement = event.target as HTMLSelectElement;
+        callback(selectElement.value);
+    });
+
+    label.appendChild(select);
+    container.appendChild(label);
+}
+
+function addOptionToDropdown(id : string, option : string) {
+    const select = document.getElementById(id) as HTMLSelectElement;
+    if (!select) {
+        throw new Error("Could not find dropdown with id:" + id);
+    }
+
+    const optionElement = document.createElement("option");
+    optionElement.value = option;
+    optionElement.text = option;
+    select.appendChild(optionElement);
+}
+
+function setupTrasformControls(callbacks : TransformationCallbacks) {
+    chaderUI.setHeader('Basic Transformation', 'controls');
+
+    chaderUI.setupSlider('tx', 'Position-x', { value: 0, min: -15, max: 15, slide: (value) => { 
+        callbacks.onTranslateX?.(value);
+    }, step: 0.01}, 'controls');
+    chaderUI.setupSlider('ty', 'Position-y', { value: 0, min: -15, max: 15, slide: (value) => { 
+        callbacks.onTranslateY?.(value);
+    }, step: 0.01}, 'controls');
+    chaderUI.setupSlider('sx', 'Scale-x', { value: 1, min: -10, max: 10, slide: (value) => { 
+        callbacks.onScaleX?.(value);
+    }, step: 0.01}, 'controls');
+    chaderUI.setupSlider('sy', 'Scale-y', { value: 1, min: -10, max: 10, slide: (value) => { 
+        callbacks.onScaleY?.(value);
+    }, step: 0.01}, 'controls');
+    chaderUI.setupSlider('angle', 'Angle', { value: 0, min: 0, max: 360, slide: (value) => {
+        callbacks.onRotate?.(value);
+    }}, 'controls');
 }
