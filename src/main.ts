@@ -24,31 +24,45 @@ function setActiveObject(obj : Geometry<any>) {
 }
 
 function createObject(gl : WebGL2RenderingContext, program : WebGLProgram, posAttribLocation : number, colorsLocation : number) {
+    
+    var instance : Geometry<any>;
+    var idNumber : number;
     switch (SelectedTypeToCreate.getGeometryType()) {
         case (GeometryType.RECTANGLE) : {
-            const instance = new Rectangle(gl, program, posAttribLocation, colorsLocation, GeometryParams);
+            instance = new Rectangle(gl, program, posAttribLocation, colorsLocation, GeometryParams);
             chaderUI.addOptionToDropdown('shape-dropdown', instance.id.toString());
             ObjectsInScene.push(instance);
             setActiveObject(instance);
+            var idNumber = instance.id;
             break;
         }
         case (GeometryType.POLYGON) : {
-            const instance = new Polygon(gl, program, posAttribLocation, colorsLocation, GeometryParams);
+            instance = new Polygon(gl, program, posAttribLocation, colorsLocation, GeometryParams);
             chaderUI.addOptionToDropdown('shape-dropdown', instance.id.toString());
             ObjectsInScene.push(instance);
             setActiveObject(instance);
+            var idNumber = instance.id;
             break;
-        }
+        } 
         case (GeometryType.SQUARE) : {
-            const instance = new Square(gl, program, posAttribLocation, colorsLocation, GeometryParams);
+            instance = new Square(gl, program, posAttribLocation, colorsLocation, GeometryParams);
             chaderUI.addOptionToDropdown('shape-dropdown', instance.id.toString());
             ObjectsInScene.push(instance);
             setActiveObject(instance);
+            var idNumber = instance.id;
             break;
+        } 
+        default : {
+            idNumber = -1;
         }
     }
-
+    changeSelectedObjectUi(idNumber);
     drawScene(gl, program, posAttribLocation, colorsLocation);
+}
+
+function changeSelectedObjectUi(id : number) {
+    var dropdown = document.getElementById('shape-dropdown') as HTMLSelectElement;
+    dropdown.value = id.toString();
 }
 
 export function resizeCanvasToDisplaySize() {
