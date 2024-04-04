@@ -1,7 +1,7 @@
 import { setPolygon } from "./shape/polygon.js";
 import { setRectangle } from "./shape/rectangle.js";
 import { chaderUI } from "./ui.js";
-import { matrixTransformer } from "./utils/math.js";
+import { matrixTransformer } from "./utils/chaderM3.js";
 import { createProgram, createShader } from "./utils/shaderUtils.js";
 
 var translation = [0, 0];
@@ -25,15 +25,23 @@ function resizeCanvasToDisplaySize() {
 }
 
 function basicTransformationUI(gl : WebGL2RenderingContext, program : WebGLProgram, positionAttributeLocation : number, positionBuffer : WebGLBuffer | null) {
-    chaderUI.setHeader('Transformation');
-    chaderUI.setupSlider('x', 'Position-x', { value: 0, min: -25, max: 25, slide: (value) => { 
+    chaderUI.setHeader('Basic Transformation');
+    chaderUI.setupSlider('tx', 'Position-x', { value: 0, min: -15, max: 15, slide: (value) => { 
         translation[0] = value;
         drawScene(gl, program, positionAttributeLocation, positionBuffer);
-    }});
-    chaderUI.setupSlider('y', 'Position-y', { value: 0, min: -25, max: 25, slide: (value) => { 
+    }, step: 0.01});
+    chaderUI.setupSlider('ty', 'Position-y', { value: 0, min: -15, max: 15, slide: (value) => { 
         translation[1] = value;
         drawScene(gl, program, positionAttributeLocation, positionBuffer);
-    }});
+    }, step: 0.01});
+    chaderUI.setupSlider('sx', 'Scale-x', { value: 1, min: -10, max: 10, slide: (value) => { 
+        scale[0] = value;
+        drawScene(gl, program, positionAttributeLocation, positionBuffer);
+    }, step: 0.01});
+    chaderUI.setupSlider('sy', 'Scale-y', { value: 1, min: -10, max: 10, slide: (value) => { 
+        scale[1] = value;
+        drawScene(gl, program, positionAttributeLocation, positionBuffer);
+    }, step: 0.01});
     chaderUI.setupSlider('angle', 'Angle', { value: 0, min: 0, max: 360, slide: (value) => {
         angleInRadians = value * Math.PI / 180;
         drawScene(gl, program, positionAttributeLocation, positionBuffer);
@@ -117,7 +125,8 @@ function drawScene(gl : WebGL2RenderingContext, program : WebGLProgram, position
     gl.vertexAttribPointer(positionAttributeLocation, size, type, normalize, stride, offset);
 
     // Compute matrix
-    var matrix = matrixTransformer.project(gl.canvas.width, gl.canvas.height);
+    var matrix = matrixTransformer.identity();
+
     matrix = matrixTransformer.translate(matrix, translation[0], translation[1]);
     matrix = matrixTransformer.rotate(matrix, angleInRadians);
     matrix = matrixTransformer.scale(matrix, scale[0], scale[1]);
@@ -127,7 +136,7 @@ function drawScene(gl : WebGL2RenderingContext, program : WebGLProgram, position
     gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
 
     const matrixUniformLocation = gl.getUniformLocation(program, 'u_Matrix');
-    gl.uniformMatrix3fv(matrixUniformLocation, false, []);
+    gl.uniformMatrix3fv(matrixUniformLocation, false, matrix);
 
     const colorUniformLocation = gl.getUniformLocation(program, 'u_Color');
     gl.uniform4f(colorUniformLocation, 0.576, 0.847, 0.890, 1);
