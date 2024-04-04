@@ -1,4 +1,4 @@
-import { drawScene, resizeCanvasToDisplaySize } from "../main.js";
+import { drawScene } from "../main.js";
 import { chaderUI, TransformationCallbacks } from "../ui.js";
 import { matrixTransformer } from "../utils/chaderM3.js";
 import { Geometry, GeometryOption, GeometryType } from "./geometry.js";
@@ -77,12 +77,12 @@ export class Rectangle extends Geometry<RectangleParams> {
         const y2 = this.y + halfHeight;
 
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-            x1, y1,
-            x2, y1,
-            x1, y2,
-            x1, y2,
-            x2, y1,
-            x2, y2,
+            x1, y1, 0.576, 0.847, 0.890,
+            x2, y1, 0.576, 0.847, 0.890,
+            x1, y2, 0.576, 0.847, 0.890,
+            x1, y2, 0.576, 0.847, 0.890,
+            x2, y1, 0.576, 0.847, 0.890,
+            x2, y2, 0.576, 0.847, 0.890,
         ]), gl.STATIC_DRAW);
     }
 
@@ -94,12 +94,20 @@ export class Rectangle extends Geometry<RectangleParams> {
         this.gl.enableVertexAttribArray(this.posAttribLocation);
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vBuffer);
 
-        var size = 2;             // 2 components per iteration
-        var type = this.gl.FLOAT;      // the data is 32bit floats
-        var normalize = false;    // don't normalize the data
-        var stride = 0;           // 0 = move forward size * sizeof(type) each iteration to get the next position
-        var offset = 0;           // start at the beginning of the buffer
+        var size = 2;
+        var type = this.gl.FLOAT;
+        var normalize = false;
+        var stride = 5 * Float32Array.BYTES_PER_ELEMENT;
+        var offset = 0;
         this.gl.vertexAttribPointer(this.posAttribLocation, size, type, normalize, stride, offset);
+
+        // Tell the attribute how to get data out of the buffer
+        this.gl.enableVertexAttribArray(this.colorAttribLocation);
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vBuffer);
+
+        size = 3;
+        offset = 2 * Float32Array.BYTES_PER_ELEMENT;
+        this.gl.vertexAttribPointer(this.colorAttribLocation, size, type, normalize, stride, offset);
 
         // Compute matrix
         var matrix = matrixTransformer.identity();
@@ -114,9 +122,6 @@ export class Rectangle extends Geometry<RectangleParams> {
 
         const matrixUniformLocation = this.gl.getUniformLocation(this.program, 'u_Matrix');
         this.gl.uniformMatrix3fv(matrixUniformLocation, false, matrix);
-
-        const colorUniformLocation = this.gl.getUniformLocation(this.program, 'u_Color');
-        this.gl.uniform4f(colorUniformLocation, 0.576, 0.847, 0.890, 1);
 
         this.setGeometry(this.gl);
 
