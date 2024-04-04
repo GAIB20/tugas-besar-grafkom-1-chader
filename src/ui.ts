@@ -8,11 +8,11 @@ export interface SliderOptions {
 }
 
 export interface TransformationCallbacks {
-    onTranslateX : (value : number) => void;
-    onTranslateY : (value : number) => void;
-    onRotate : (value : number) => void;
-    onScaleX : (value : number) => void;
-    onScaleY : (value : number) => void;
+    onTranslateX? : (value : number) => void;
+    onTranslateY? : (value : number) => void;
+    onRotate? : (value : number) => void;
+    onScaleX? : (value : number) => void;
+    onScaleY? : (value : number) => void;
 }
 
 
@@ -70,7 +70,7 @@ function setupSlider(id : string, title : string, options : SliderOptions, conta
     container?.appendChild(sliderContainer);
 }   
 
-function setHeader(title : string, containerId : string) {
+function setHeader(title : string, containerId : string, id? : string) {
 
     const container = document.getElementById(containerId);
     if (!container) {
@@ -112,18 +112,18 @@ function setupTrasformControls(callbacks : TransformationCallbacks) {
     chaderUI.setHeader('Basic Transformation', 'controls');
 
     chaderUI.setupSlider('tx', 'Position-x', { value: 0, min: -15, max: 15, slide: (value) => { 
-        callbacks.onTranslateX(value);
+        callbacks.onTranslateX?.(value);
     }, step: 0.01}, 'controls');
     chaderUI.setupSlider('ty', 'Position-y', { value: 0, min: -15, max: 15, slide: (value) => { 
-        callbacks.onTranslateY(value);
+        callbacks.onTranslateY?.(value);
     }, step: 0.01}, 'controls');
     chaderUI.setupSlider('sx', 'Scale-x', { value: 1, min: -10, max: 10, slide: (value) => { 
-        callbacks.onScaleX(value);
+        callbacks.onScaleX?.(value);
     }, step: 0.01}, 'controls');
     chaderUI.setupSlider('sy', 'Scale-y', { value: 1, min: -10, max: 10, slide: (value) => { 
-        callbacks.onScaleY(value);
+        callbacks.onScaleY?.(value);
     }, step: 0.01}, 'controls');
     chaderUI.setupSlider('angle', 'Angle', { value: 0, min: 0, max: 360, slide: (value) => {
-        callbacks.onRotate(value);
+        callbacks.onRotate?.(value);
     }}, 'controls');
 }

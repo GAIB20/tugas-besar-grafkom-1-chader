@@ -1,4 +1,5 @@
 import { resizeCanvasToDisplaySize } from "../main.js";
+import { chaderUI, TransformationCallbacks } from "../ui.js";
 import { matrixTransformer } from "../utils/chaderM3.js";
 import { Geometry, GeometryOption, GeometryType } from "./geometry.js";
 
@@ -33,8 +34,32 @@ export class Rectangle extends Geometry<RectangleParams> {
     public width : number;
     public height : number;
 
-    constructor(gl : WebGL2RenderingContext, params : RectangleParams) {
-        super(gl);
+    public callbacks : TransformationCallbacks = {
+        onTranslateX: (value) => {
+            this.translation[0] = value;
+            this.drawGeometry();
+        },
+        onTranslateY: (value) => {
+            this.translation[1] = value;
+            this.drawGeometry();
+        },
+        onScaleX: (value) => {
+            this.scale[0] = value;
+            this.drawGeometry();
+        },
+        onScaleY: (value) => {
+            this.scale[1] = value;
+            this.drawGeometry();
+        },
+        onRotate: (value) => {
+            const radians = value * Math.PI / 180;
+            this.angleInRadians = radians;
+            this.drawGeometry();
+        }
+    }
+
+    constructor(gl : WebGL2RenderingContext, program : WebGLProgram, posAttribLocation : number, params : RectangleParams) {
+        super(gl, program, posAttribLocation);
         const {x, y, width, height} = params;
         this.x = x;
         this.y = y;
@@ -61,29 +86,29 @@ export class Rectangle extends Geometry<RectangleParams> {
         ]), gl.STATIC_DRAW);
     }
 
-    drawGeometry(gl: WebGL2RenderingContext, program: WebGLProgram, positionAttributeLocation: number) : void {
+    drawGeometry() : void {
         resizeCanvasToDisplaySize();
 
         // Set the viewport
-        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+        this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
 
         // Clear the canvas
-        gl.clearColor(0.118, 0.125, 0.188, 1.0); // dark blue background
-        gl.clear(gl.COLOR_BUFFER_BIT);
+        this.gl.clearColor(0.118, 0.125, 0.188, 1.0); // dark blue background
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
-        // Use the program
-        gl.useProgram(program);
+        // Use the this.program
+        this.gl.useProgram(this.program);
 
         // Tell the attribute how to get data out of the buffer
-        gl.enableVertexAttribArray(positionAttributeLocation);
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.vBuffer);
+        this.gl.enableVertexAttribArray(this.posAttribLocation);
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vBuffer);
 
         var size = 2;             // 2 components per iteration
-        var type = gl.FLOAT;      // the data is 32bit floats
+        var type = this.gl.FLOAT;      // the data is 32bit floats
         var normalize = false;    // don't normalize the data
         var stride = 0;           // 0 = move forward size * sizeof(type) each iteration to get the next position
         var offset = 0;           // start at the beginning of the buffer
-        gl.vertexAttribPointer(positionAttributeLocation, size, type, normalize, stride, offset);
+        this.gl.vertexAttribPointer(this.posAttribLocation, size, type, normalize, stride, offset);
 
         // Compute matrix
         var matrix = matrixTransformer.identity();
@@ -93,53 +118,29 @@ export class Rectangle extends Geometry<RectangleParams> {
         matrix = matrixTransformer.scale(matrix, this.scale[0], this.scale[1]);
 
         // Uniforms
-        const resolutionUniformLocation = gl.getUniformLocation(program, 'u_Resolution');
-        gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
+        const resolutionUniformLocation = this.gl.getUniformLocation(this.program, 'u_Resolution');
+        this.gl.uniform2f(resolutionUniformLocation, this.gl.canvas.width, this.gl.canvas.height);
 
-        const matrixUniformLocation = gl.getUniformLocation(program, 'u_Matrix');
-        gl.uniformMatrix3fv(matrixUniformLocation, false, matrix);
+        const matrixUniformLocation = this.gl.getUniformLocation(this.program, 'u_Matrix');
+        this.gl.uniformMatrix3fv(matrixUniformLocation, false, matrix);
 
-        const colorUniformLocation = gl.getUniformLocation(program, 'u_Color');
-        gl.uniform4f(colorUniformLocation, 0.576, 0.847, 0.890, 1);
+        const colorUniformLocation = this.gl.getUniformLocation(this.program, 'u_Color');
+        this.gl.uniform4f(colorUniformLocation, 0.576, 0.847, 0.890, 1);
 
-        this.setGeometry(gl);
+        this.setGeometry(this.gl);
 
-        // Draw the rectangle
-        var primitiveType = gl.TRIANGLES;
+        // Draw the rectanthis.gle
+        var primitiveType = this.gl.TRIANGLES;
         var offset = 0;
         var count = 6;
-        gl.drawArrays(primitiveType, offset, count);
+        this.gl.drawArrays(primitiveType, offset, count);
     }
 
     onObjectSelected(): void {
-        
+        chaderUI.setupTrasformControls(this.callbacks);
     }
 
     onObjectDeselected(): void {
         
     }
 }
-
-// export function setRectangle(gl : WebGL2RenderingContext, x : number, y : number, width : number, height : number) {
-//     const halfWidth = width / 2;
-//     const halfHeight = height / 2;
-
-//     console.log("halfWidth", halfWidth);
-//     console.log("halfHeight", halfHeight);
-
-//     const x1 = x - halfWidth;
-//     const x2 = x + halfWidth;
-//     const y1 = y - halfHeight;
-//     const y2 = y + halfHeight;
-
-//     console.log(x1, y1, x2, y2);
-
-//     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-//         x1, y1,
-//         x2, y1,
-//         x1, y2,
-//         x1, y2,
-//         x2, y1,
-//         x2, y2,
-//     ]), gl.STATIC_DRAW);
-// }

@@ -1,28 +1,28 @@
 import { Geometry, GeometryOption, GeometryType } from "./shape/geometry.js";
 import { Rectangle, RectangleOption } from "./shape/rectangle.js";
-import { chaderUI } from "./ui.js";
-import { matrixTransformer } from "./utils/chaderM3.js";
 import { createProgram, createShader } from "./utils/shaderUtils.js";
-
-// var translation = [0, 0];
-// var angleInRadians = 0;
-// var scale = [1, 1];
 
 const TypeToCreateOptions = {
     RectangleLifecycle: RectangleOption
 }
 var SelectedTypeToCreate : GeometryOption
-var InitialShapeSetup : any;
+var GeometryParams : any;
 
 var ObjectsInScene : Geometry<any>[] = []
 var ActiveObject : Geometry<any>
 
-function createObject(gl : WebGL2RenderingContext) {
+function setActiveObject(obj : Geometry<any>) {
+    ActiveObject?.onObjectDeselected();
+    ActiveObject = obj;
+    ActiveObject.onObjectSelected();
+}
+
+function createObject(gl : WebGL2RenderingContext, program : WebGLProgram, posAttribLocation : number) {
     switch (SelectedTypeToCreate.getGeometryType()) {
         case (GeometryType.RECTANGLE) : {
-            const instance = new Rectangle(gl, InitialShapeSetup);
+            const instance = new Rectangle(gl, program, posAttribLocation, GeometryParams);
             ObjectsInScene.push(instance);
-            ActiveObject = instance;
+            setActiveObject(instance);
             break;
         }
     }
@@ -117,10 +117,10 @@ function main() {
     // basicTransformationUI(gl, program, positionAttributeLocation, positionBuffer);
 
     SelectedTypeToCreate = RectangleOption;
-    InitialShapeSetup = {
+    GeometryParams = {
         x : 0, y : 0, width : 10, height: 10
     }
-    createObject(gl);
+    createObject(gl, program, positionAttributeLocation);
 
     ActiveObject.drawGeometry(gl, program, positionAttributeLocation);
 

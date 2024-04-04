@@ -18,14 +18,20 @@ export abstract class Geometry<T> {
     public scale = [1, 1];
 
     protected gl : WebGL2RenderingContext;
+    protected program : WebGLProgram;
+    protected posAttribLocation : number;
     protected vBuffer : WebGLBuffer | null;
 
-    constructor(gl : WebGL2RenderingContext) {
-        this.id = Geometry.numOfObjects + 1;
+    constructor(gl : WebGL2RenderingContext, program : WebGLProgram, posAttribLocation : number) {
+        Geometry.numOfObjects += 1;
+
+        this.id = Geometry.numOfObjects;
         this.gl = gl;
+        this.program = program;
+        this.posAttribLocation = posAttribLocation;
+
         this.vBuffer = gl.createBuffer();
 
-        Geometry.numOfObjects += 1;
     }
 
     abstract setGeometry   // Fill the buffer data
