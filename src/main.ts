@@ -1,3 +1,4 @@
+import { setPolygon } from "./shape/polygon.js";
 import { setRectangle } from "./shape/rectangle.js";
 import { chaderUI } from "./ui.js";
 import { matrixTransformer } from "./utils/math.js";
@@ -131,12 +132,17 @@ function drawScene(gl : WebGL2RenderingContext, program : WebGLProgram, position
     const colorUniformLocation = gl.getUniformLocation(program, 'u_Color');
     gl.uniform4f(colorUniformLocation, 0.576, 0.847, 0.890, 1);
 
-    setRectangle(gl, 0, 0, 10, 10);
+    // setRectangle(gl, 0, 0, 10, 10);
 
-    // Draw the rectangle
+    // // Draw the rectangle
+    // var primitiveType = gl.TRIANGLES;
+    // var offset = 0;
+    // var count = 6;
+
+    setPolygon(gl, 0, 0, 5, 5);
     var primitiveType = gl.TRIANGLES;
     var offset = 0;
-    var count = 6;
+    var count = 30;
     gl.drawArrays(primitiveType, offset, count);
 }
 
