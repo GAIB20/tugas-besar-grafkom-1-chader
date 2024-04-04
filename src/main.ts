@@ -1,9 +1,10 @@
 import { Geometry, GeometryOption, GeometryType } from "./shape/geometry.js";
 import { Rectangle, RectangleOption } from "./shape/rectangle.js";
 import { createProgram, createShader } from "./utils/shaderUtils.js";
+import { chaderUI } from "./ui.js";
 
 const TypeToCreateOptions = {
-    RectangleLifecycle: RectangleOption
+    RectangleOption
 }
 var SelectedTypeToCreate : GeometryOption
 var GeometryParams : any;
@@ -26,6 +27,8 @@ function createObject(gl : WebGL2RenderingContext, program : WebGLProgram, posAt
             break;
         }
     }
+
+    drawScene(gl, program, posAttribLocation);
 }
 
 export function resizeCanvasToDisplaySize() {
@@ -95,13 +98,41 @@ function main() {
 
     // basicTransformationUI(gl, program, positionAttributeLocation, positionBuffer);
 
-    SelectedTypeToCreate = RectangleOption;
-    GeometryParams = {
-        x : 0, y : 0, width : 10, height: 10
-    }
-    createObject(gl, program, positionAttributeLocation);
+    document.getElementById('button_generate')?.addEventListener('click', () => {
+        var selected = document.getElementById('dropdown_generate') as HTMLSelectElement;
+        var selectedValue = selected.value;
+        console.log("Value: " + selectedValue);
 
-    ActiveObject.drawGeometry(gl, program, positionAttributeLocation);
+        switch(selectedValue) {
+            case 'rectangle': {
+                SelectedTypeToCreate = RectangleOption;
+                GeometryParams = {
+                    x : 0, y : 0, width : 10, height: 10
+                }
+                break;
+            }
+        }
+
+        createObject(gl, program, positionAttributeLocation);
+        
+    });
+
+    resizeCanvasToDisplaySize();
+
+    // Set the viewport
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+    // Clear the canvas
+    gl.clearColor(0.118, 0.125, 0.188, 1.0); // dark blue background
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    // SelectedTypeToCreate = RectangleOption;
+    // GeometryParams = {
+    //     x : 0, y : 0, width : 10, height: 10
+    // }
+    // createObject(gl, program, positionAttributeLocation);
+
+    // ActiveObject.drawGeometry(gl, program, positionAttributeLocation);
 
 
 
@@ -113,55 +144,23 @@ function main() {
     // drawScene(gl, program, positionAttributeLocation, positionBuffer);
 }
 
-// function drawScene(gl : WebGL2RenderingContext, program : WebGLProgram, positionAttributeLocation : number, positionBuffer : WebGLBuffer | null) {
-//     resizeCanvasToDisplaySize();
 
-//     // Set the viewport
-//     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
-//     // Clear the canvas
-//     gl.clearColor(0.118, 0.125, 0.188, 1.0); // dark blue background
-//     gl.clear(gl.COLOR_BUFFER_BIT);
+export function drawScene(gl : WebGL2RenderingContext, program : WebGLProgram, positionAttributeLocation : number) {
+    resizeCanvasToDisplaySize();
 
-//     // Use the program
-//     gl.useProgram(program);
+    // Set the viewport
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
-//     // Tell the attribute how to get data out of the buffer
-//     gl.enableVertexAttribArray(positionAttributeLocation);
-//     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    // Clear the canvas
+    gl.clearColor(0.118, 0.125, 0.188, 1.0); // dark blue background
+    gl.clear(gl.COLOR_BUFFER_BIT);
 
-//     var size = 2;             // 2 components per iteration
-//     var type = gl.FLOAT;      // the data is 32bit floats
-//     var normalize = false;    // don't normalize the data
-//     var stride = 0;           // 0 = move forward size * sizeof(type) each iteration to get the next position
-//     var offset = 0;           // start at the beginning of the buffer
-//     gl.vertexAttribPointer(positionAttributeLocation, size, type, normalize, stride, offset);
-
-//     // Compute matrix
-//     var matrix = matrixTransformer.identity();
-
-//     matrix = matrixTransformer.translate(matrix, translation[0], translation[1]);
-//     matrix = matrixTransformer.rotate(matrix, angleInRadians);
-//     matrix = matrixTransformer.scale(matrix, scale[0], scale[1]);
-
-//     // Uniforms
-//     const resolutionUniformLocation = gl.getUniformLocation(program, 'u_Resolution');
-//     gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
-
-//     const matrixUniformLocation = gl.getUniformLocation(program, 'u_Matrix');
-//     gl.uniformMatrix3fv(matrixUniformLocation, false, matrix);
-
-//     const colorUniformLocation = gl.getUniformLocation(program, 'u_Color');
-//     gl.uniform4f(colorUniformLocation, 0.576, 0.847, 0.890, 1);
-
-//     setRectangle(gl, 0, 0, 10, 10);
-
-//     // Draw the rectangle
-//     var primitiveType = gl.TRIANGLES;
-//     var offset = 0;
-//     var count = 6;
-//     gl.drawArrays(primitiveType, offset, count);
-// }
+    // Draw the objects
+    for (const obj of ObjectsInScene) {
+        obj.drawGeometry(gl, program, positionAttributeLocation);
+    }
+}
 
 
 main();

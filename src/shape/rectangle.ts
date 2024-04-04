@@ -1,4 +1,4 @@
-import { resizeCanvasToDisplaySize } from "../main.js";
+import { drawScene, resizeCanvasToDisplaySize } from "../main.js";
 import { chaderUI, TransformationCallbacks } from "../ui.js";
 import { matrixTransformer } from "../utils/chaderM3.js";
 import { Geometry, GeometryOption, GeometryType } from "./geometry.js";
@@ -37,24 +37,24 @@ export class Rectangle extends Geometry<RectangleParams> {
     public callbacks : TransformationCallbacks = {
         onTranslateX: (value) => {
             this.translation[0] = value;
-            this.drawGeometry();
+            drawScene(this.gl, this.program, this.posAttribLocation);
         },
         onTranslateY: (value) => {
             this.translation[1] = value;
-            this.drawGeometry();
+            drawScene(this.gl, this.program, this.posAttribLocation);
         },
         onScaleX: (value) => {
             this.scale[0] = value;
-            this.drawGeometry();
+            drawScene(this.gl, this.program, this.posAttribLocation);
         },
         onScaleY: (value) => {
             this.scale[1] = value;
-            this.drawGeometry();
+            drawScene(this.gl, this.program, this.posAttribLocation);
         },
         onRotate: (value) => {
             const radians = value * Math.PI / 180;
             this.angleInRadians = radians;
-            this.drawGeometry();
+            drawScene(this.gl, this.program, this.posAttribLocation);
         }
     }
 
@@ -87,15 +87,6 @@ export class Rectangle extends Geometry<RectangleParams> {
     }
 
     drawGeometry() : void {
-        resizeCanvasToDisplaySize();
-
-        // Set the viewport
-        this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
-
-        // Clear the canvas
-        this.gl.clearColor(0.118, 0.125, 0.188, 1.0); // dark blue background
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-
         // Use the this.program
         this.gl.useProgram(this.program);
 
