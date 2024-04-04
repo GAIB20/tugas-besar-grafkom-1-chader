@@ -1,12 +1,14 @@
 import { Geometry, GeometryOption, GeometryType } from "./shape/geometry.js";
 import { Rectangle, RectangleOption } from "./shape/rectangle.js";
 import { Polygon, PolygonOption } from "./shape/polygon.js";
+import { Square, SquareOption } from "./shape/square.js";
+
 import { createProgram, createShader } from "./utils/shaderUtils.js";
 import { chaderUI } from "./ui.js";
-
 const TypeToCreateOptions = {
     RectangleOption,
-    PolygonOption
+    PolygonOption,
+    SquareOption
 }
 var SelectedTypeToCreate : GeometryOption
 var GeometryParams : any;
@@ -31,6 +33,14 @@ function createObject(gl : WebGL2RenderingContext, program : WebGLProgram, posAt
         }
         case (GeometryType.POLYGON) : {
             const instance = new Polygon(gl, program, posAttribLocation, colorsLocation, GeometryParams);
+            chaderUI.addOptionToDropdown('shape-dropdown', instance.id.toString());
+            ObjectsInScene.push(instance);
+            setActiveObject(instance);
+            break;
+        }
+        case (GeometryType.SQUARE) : {
+            const instance = new Square(gl, program, posAttribLocation, colorsLocation, GeometryParams);
+            chaderUI.addOptionToDropdown('shape-dropdown', instance.id.toString());
             ObjectsInScene.push(instance);
             setActiveObject(instance);
             break;
@@ -115,14 +125,21 @@ function main() {
             case 'rectangle': {
                 SelectedTypeToCreate = RectangleOption;
                 GeometryParams = {
-                    x : 0, y : 0, width : 10, height: 10
+                    x : 0, y : 0, width : 12, height: 8
                 }
                 break;
             }
             case 'polygon' : {
                 SelectedTypeToCreate = PolygonOption;
                 GeometryParams = {
-                    x : 0, y : 0, sidesLength : 10, sides: 10
+                    x : 0, y : 0, sidesLength : 10,
+                }
+                break;
+            }
+            case 'square' : {
+                SelectedTypeToCreate = SquareOption;
+                GeometryParams = {
+                    x : 0, y : 0, sideLength : 10
                 }
                 break;
             }
