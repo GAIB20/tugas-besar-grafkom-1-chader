@@ -1,0 +1,39 @@
+export enum GeometryType {
+    LINE, SQUARE, RECTANGLE, POLYGON
+}
+
+export interface GeometryOption {
+    getGeometryType : () => GeometryType;
+    getShapeName : () => string,
+    onPrepareObject : () => void,                           // Prepare UI to set initial object
+    onUnprepareObject : () => void,                         // Clean UI 
+}
+
+export abstract class Geometry<T> {
+    public static numOfObjects : number = 0;
+    public id : number;
+
+    public translation = [0, 0];
+    public angleInRadians = 0;
+    public scale = [1, 1];
+
+    protected gl : WebGL2RenderingContext;
+    protected vBuffer : WebGLBuffer | null;
+
+    constructor(gl : WebGL2RenderingContext) {
+        this.id = Geometry.numOfObjects + 1;
+        this.gl = gl;
+        this.vBuffer = gl.createBuffer();
+
+        Geometry.numOfObjects += 1;
+    }
+
+    abstract setGeometry   // Fill the buffer data
+        (gl : WebGL2RenderingContext, params: T) : void;
+
+    abstract drawGeometry  // Draw geometry to the scene
+        (gl : WebGL2RenderingContext, program : WebGLProgram, positionAttributeLocation : number) : void;
+
+    abstract onObjectSelected() : void;     // Show up controls UI
+    abstract onObjectDeselected() : void;   // Clean up controls UI
+}
