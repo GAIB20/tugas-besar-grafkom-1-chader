@@ -5,6 +5,7 @@ import { Square, SquareOption } from "./shape/square.js";
 
 import { createProgram, createShader } from "./utils/shaderUtils.js";
 import { chaderUI } from "./ui.js";
+
 const TypeToCreateOptions = {
     RectangleOption,
     PolygonOption,
