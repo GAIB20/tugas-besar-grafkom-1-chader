@@ -162,7 +162,7 @@ export class Polygon extends Geometry<PolygonParams> {
         controls?.appendChild(shapeControlGroup);
         
         chaderUI.setHeader("Polygon Properties", "shape-control-group");
-        chaderUI.setupSlider("ssl", "Number of Vertices", { min: 3, max: 30, step: 1, value: this.sides, slide : (value) => {
+        chaderUI.setupSlider("ssl", "Number of Vertices", { min: 3, max: 50, step: 1, value: this.sides, slide : (value) => {
             this.sides = value;
             drawScene(this.gl, this.program, this.posAttribLocation, this.colorAttribLocation);
         }}, "shape-control-group");
@@ -175,7 +175,6 @@ export class Polygon extends Geometry<PolygonParams> {
     }
 
     calcVertexLocations(): void {
-        if (!this.regularPolygon) return;
         const angle = 360/this.sides;
         const vertices: [number, number][] = []
         
