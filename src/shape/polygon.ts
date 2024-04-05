@@ -221,11 +221,8 @@ export class Polygon extends Geometry<PolygonParams> {
         this.vertices[index*5+1] -= deltaY / 50;
 
         let tempVertices : number[] = this.vertices;
-        
+    
         this.vertices = this.convexHull(this.vertices, 5);
-
-        console.log("original", tempVertices);
-        console.log("modified", this.vertices);
 
         drawScene(this.gl, this.program, this.posAttribLocation, this.colorAttribLocation);
 
