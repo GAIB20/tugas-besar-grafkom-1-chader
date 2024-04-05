@@ -221,8 +221,12 @@ export class Polygon extends Geometry<PolygonParams> {
         this.vertices[index*5+1] -= deltaY / 50;
 
         let tempVertices : number[] = this.vertices;
-
+        
         this.vertices = this.convexHull(this.vertices, 5);
+
+        console.log("original", tempVertices);
+        console.log("modified", this.vertices);
+
         drawScene(this.gl, this.program, this.posAttribLocation, this.colorAttribLocation);
 
         this.vertices = tempVertices;
@@ -280,7 +284,7 @@ export class Polygon extends Geometry<PolygonParams> {
     
             // check if the shape has a minimum of 1 unpicked coordinates
             const hullLength = hull.length;
-            if (hullLength < pointsLength) {
+            if (hullLength < pointsLength && hullLength > 4*size) {
                 // add any coordinates that hasn't been picked
                 let i;
                 let j;
