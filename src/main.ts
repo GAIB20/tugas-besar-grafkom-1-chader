@@ -8,11 +8,6 @@ import { createProgram, createShader } from "./utils/shaderUtils.js";
 import { chaderUI } from "./ui.js";
 import { downloadScene, loadScene } from "./utils/sceneManager.js";
 
-const TypeToCreateOptions = {
-    RectangleOption,
-    PolygonOption,
-    SquareOption
-}
 var SelectedTypeToCreate : GeometryOption
 var GeometryParams : any;
 
@@ -199,7 +194,7 @@ function registerListeners(gl : WebGL2RenderingContext, program : WebGLProgram, 
             case 'line': {
                 SelectedTypeToCreate = LineOption;
                 GeometryParams = {
-                    x1 : 0, y1 : 0, x2 : 10, y2 : 10
+                    x: 0, y: 0, length: 10
                 }
                 break;
             }

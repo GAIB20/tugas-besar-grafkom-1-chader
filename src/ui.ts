@@ -141,10 +141,10 @@ function setupTrasformControls(callbacks : TransformationCallbacks) {
 
     chaderUI.setHeader('Basic Transformation', 'transform-control-group');
 
-    chaderUI.setupSlider('tx', 'Position-x', { value: 0, min: -15, max: 15, slide: (value) => { 
+    chaderUI.setupSlider('tx', 'Translate-x', { value: 0, min: -15, max: 15, slide: (value) => { 
         callbacks.onTranslateX?.(value);
     }, step: 0.01}, 'transform-control-group');
-    chaderUI.setupSlider('ty', 'Position-y', { value: 0, min: -15, max: 15, slide: (value) => { 
+    chaderUI.setupSlider('ty', 'Translate-y', { value: 0, min: -15, max: 15, slide: (value) => { 
         callbacks.onTranslateY?.(value);
     }, step: 0.01}, 'transform-control-group');
     chaderUI.setupSlider('sx', 'Scale-x', { value: 1, min: -10, max: 10, slide: (value) => { 
@@ -153,7 +153,7 @@ function setupTrasformControls(callbacks : TransformationCallbacks) {
     chaderUI.setupSlider('sy', 'Scale-y', { value: 1, min: -10, max: 10, slide: (value) => { 
         callbacks.onScaleY?.(value);
     }, step: 0.01}, 'transform-control-group');
-    chaderUI.setupSlider('angle', 'Angle', { value: 0, min: 0, max: 360, slide: (value) => {
+    chaderUI.setupSlider('angle', 'Rotation Angle', { value: 0, min: 0, max: 360, slide: (value) => {
         callbacks.onRotate?.(value);
     }}, 'transform-control-group');
 }

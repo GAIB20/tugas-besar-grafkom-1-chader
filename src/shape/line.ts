@@ -5,10 +5,9 @@ import { Geometry, GeometryOption, GeometryType } from "./geometry.js";
 
 
 interface LineParams {
-    x1 : number,
-    y1 : number,
-    x2 : number,
-    y2 : number
+    x : number,
+    y : number,
+    length : number
 }
 
 export const LineOption : GeometryOption = {
@@ -26,10 +25,9 @@ export const LineOption : GeometryOption = {
 }
 
 export class Line extends Geometry<LineParams> {
-    public x1 : number;
-    public y1 : number;
-    public x2 : number;
-    public y2 : number;
+    public x : number;
+    public y : number;
+    public length : number;
 
     public callbacks : TransformationCallbacks = {
         onTranslateX: (value) => {
@@ -57,31 +55,23 @@ export class Line extends Geometry<LineParams> {
 
     constructor(gl : WebGL2RenderingContext, program : WebGLProgram, posAttribLocation : number, colorAttribLocation : number, params : LineParams) {
         super(gl, program, posAttribLocation, colorAttribLocation, GeometryType.LINE);
-        this.x1 = params.x1;
-        this.y1 = params.y1;
-        this.x2 = params.x2;
-        this.y2 = params.y2;
+        this.x = params.x;
+        this.y = params.y;
+        this.length = params.length;
     }
 
     setGeometry(gl : WebGL2RenderingContext) : void {
-        console.log(this.x1, this.y1, this.x2, this.y2);
-
-        // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-        //     this.x1, this.y1, 0.576, 0.858, 0.439,
-        //     this.x2, this.y2, 0.576, 0.858, 0.439
-        // ]), gl.STATIC_DRAW);
+        this.calcVertexLocations();
 
         const vertices = [
-            this.x1, this.y1, 0.576, 0.858, 0.439,
-            this.x2, this.y2, 0.576, 0.858, 0.439
+            this.vertexLocations[0], this.vertexLocations[1], 0.576, 0.847, 0.890,
+            this.vertexLocations[2], this.vertexLocations[3], 0.576, 0.858, 0.439
         ]
 
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 
-        const indices = [
-         0,1
-        ]
+        const indices = [ 0,1 ]
 
         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.iBuffer);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
@@ -100,9 +90,6 @@ export class Line extends Geometry<LineParams> {
         var stride = 5 * Float32Array.BYTES_PER_ELEMENT;
         var offset = 0;
         this.gl.vertexAttribPointer(this.posAttribLocation, size, type, normalize, stride, offset);
-        console.log("Attribute")
-        console.log(this.posAttribLocation);
-        console.log(this.colorAttribLocation)
         this.gl.enableVertexAttribArray(this.colorAttribLocation);
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vBuffer);
 
@@ -139,30 +126,10 @@ export class Line extends Geometry<LineParams> {
         controls?.appendChild(shapeControlGroup);
 
         chaderUI.setHeader('Line Properties', 'shape-control-group');
-        // chaderUI.setupSlider('point1_length', 'Point 1 Length', {
-        //     min: -30,
-        //     max: 30,
-        //     value: 0,
-        //     step: 1,
-        //     slide: (value) => {
-        //         this.x1 = this.x1 + value;
-        //         this.y1 = this.y1 + value;
-        //         drawScene(this.gl, this.program, this.posAttribLocation, this.colorAttribLocation);
-        //         console.log(this.x1, this.y1);
-        //     }
-        // }, 'shape-control-group');
-
-        // chaderUI.setupSlider('point2_length', 'Point 2 Length', {
-        //     min: -30,
-        //     max: 30,
-        //     value: 0,
-        //     step: 1,
-        //     slide: (value) => {
-        //         this.x2 = this.x2 + value;
-        //         this.y2 = this.y2 + value;
-        //         drawScene(this.gl, this.program, this.posAttribLocation, this.colorAttribLocation);
-        //         console.log(this.x2, this.y2);
-        //     }}, 'shape-control-group');
+        chaderUI.setupSlider("llen", "Side Length", { min: 0, max: 30, step: 0.01, value: this.length, slide : (value) => {
+            this.length = value;
+            drawScene(this.gl, this.program, this.posAttribLocation, this.colorAttribLocation);
+        }}, "shape-control-group");
 
         chaderUI.setupTrasformControls(this.callbacks);
     }
@@ -175,7 +142,12 @@ export class Line extends Geometry<LineParams> {
     }
 
     calcVertexLocations(): void {
-        // TODO: Implement this
+        const halfLength = this.length / 2;
+
+        this.vertexLocations = [
+            this.x - halfLength, this.y,
+            this.x + halfLength, this.y
+        ];
     }
 
     onVertexMoved(index: number, deltaX: number, deltaY: number): void {

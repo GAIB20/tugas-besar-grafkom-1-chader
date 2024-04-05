@@ -1,4 +1,5 @@
 import { Geometry, GeometryType } from "../shape/geometry.js";
+import { Line } from "../shape/line.js";
 import { Polygon } from "../shape/polygon.js";
 import { Rectangle } from "../shape/rectangle.js";
 import { Square } from "../shape/square.js";
@@ -39,7 +40,16 @@ export function loadScene(
         const { translation, angleInRadians, scale  } = obj;
         switch (obj.type) {
             case GeometryType.LINE:
-                break;
+                params = { x: obj.x, y: obj.y, length: obj.length };
+                geometry = new Line(gl, program, posAttribLocation, colorAttribLocation, params);
+
+                geometry.translation = translation;
+                geometry.angleInRadians = angleInRadians;
+                geometry.scale = scale;
+
+                geometry.vertexLocations = obj.vertexLocations;
+
+                return geometry;
             case GeometryType.SQUARE:
                 params = { x: obj.x, y: obj.y, sideLength: obj.sideLength };
                 geometry = new Square(gl, program, posAttribLocation, colorAttribLocation, params);
@@ -47,6 +57,8 @@ export function loadScene(
                 geometry.translation = translation;
                 geometry.angleInRadians = angleInRadians;
                 geometry.scale = scale;
+
+                geometry.vertexLocations = obj.vertexLocations;
 
                 return geometry;
             case GeometryType.RECTANGLE:
@@ -56,6 +68,8 @@ export function loadScene(
                 geometry.angleInRadians = angleInRadians;
                 geometry.scale = scale;
 
+                geometry.vertexLocations = obj.vertexLocations;
+
                 return geometry;
             case GeometryType.POLYGON:
                 params = { x: obj.x, y: obj.y, sidesLength: obj.sidesLength, sides: obj.sides };
@@ -64,6 +78,8 @@ export function loadScene(
                 geometry.translation = translation;
                 geometry.angleInRadians = angleInRadians;
                 geometry.scale = scale;
+
+                geometry.vertexLocations = obj.vertexLocations;
 
                 return geometry;
         }

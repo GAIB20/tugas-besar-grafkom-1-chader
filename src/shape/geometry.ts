@@ -17,7 +17,7 @@ export abstract class Geometry<T> {
     public angleInRadians = 0;
     public scale = [1, 1];
 
-    protected vertexLocations : number[] = [];
+    public vertexLocations : number[] = [];
 
     protected gl : WebGL2RenderingContext;
     protected program : WebGLProgram;
