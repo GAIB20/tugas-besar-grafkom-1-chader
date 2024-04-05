@@ -90,4 +90,23 @@ export abstract class Geometry<T> {
             a: this.vertices[vertexIdx * 6 + 5]
         };
     }
+
+    fadeIn() {
+        let alpha = 0.0;
+        const interval = setInterval(() => {
+            alpha += 0.05;
+
+            this.vertices.forEach((_, idx) => {
+                if (idx % 6 === 0) {
+                    this.vertices[idx + 5] = alpha;
+                }
+            });
+
+            drawScene(this.gl, this.program, this.posAttribLocation, this.colorAttribLocation);
+
+            if (alpha >= 1.0) {
+                clearInterval(interval);
+            }
+        }, 10);
+    }
 }

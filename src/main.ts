@@ -68,9 +68,9 @@ function createObject(gl : WebGL2RenderingContext, program : WebGLProgram, posAt
             idNumber = -1;
         }
     }
-    console.log("Created object with id: " + idNumber);
+
+    ActiveObject.fadeIn();
     changeSelectedObjectUi(idNumber);
-    drawScene(gl, program, posAttribLocation, colorsLocation);
 }
 
 function changeSelectedObjectUi(id : number) {
@@ -119,6 +119,8 @@ function main() {
         console.error('Failed to get WebGL2 context');
         return;
     }
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.enable(gl.BLEND);
 
     // Parse the shader source from the HTML
     const vsSource = document.querySelector('#vertex-shader-2d')?.textContent;

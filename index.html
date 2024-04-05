@@ -42,7 +42,7 @@
         #define PIXEL_PER_UNIT 32.0
 
         attribute vec2 a_Position;
-        attribute vec3 a_Color;
+        attribute vec4 a_Color;
 
         uniform vec2 u_Resolution;
         uniform mat3 u_Matrix;
@@ -54,8 +54,8 @@
             float clip_space_x = transformed.x * PIXEL_PER_UNIT / u_Resolution.x * 2.0;
             float clip_space_y = transformed.y * PIXEL_PER_UNIT / u_Resolution.y * 2.0;
 
-            gl_Position = vec4(clip_space_x, clip_space_y, 0.0, 1.0);
-            v_Color = vec4(a_Color, 1.0);
+            gl_Position = vec4(clip_space_x, clip_space_y, 1.0, 1.0);
+            v_Color = a_Color;
         }
     </script>
     <script id="fragment-shader-2d" type="notjs">
