@@ -242,6 +242,12 @@ function registerListeners(gl : WebGL2RenderingContext, program : WebGLProgram, 
         
     });
     
+    // Clear the scene
+    document.getElementById('clear-canvas-btn')?.addEventListener('click', () => {
+        ObjectsInScene = [];
+        drawScene(gl, program, posAttribLocation, colorAttribLocation);
+    });
+
     // Button for saving and loading scene
     const saveBtn = document.getElementById('scene-save-btn') as HTMLButtonElement;
     saveBtn.addEventListener('click', () => {
