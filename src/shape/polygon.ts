@@ -31,6 +31,7 @@ export class Polygon extends Geometry<PolygonParams> {
     public y : number;
     public sidesLength : number;
     public sides : number;
+    public color : RGBA;
 
     public regularPolygon: boolean = true;
 
@@ -70,10 +71,12 @@ export class Polygon extends Geometry<PolygonParams> {
             for (let i = 0; i < sides+1; i++) {
                 this.vertices.push(0, 0, params.color.r, params.color.g, params.color.b);
             }
+            this.color = params.color;
         } else {
             for (let i = 0; i < sides+1; i++) {
                 this.vertices.push(0, 0, 0.576, 0.847, 0.890);
             }
+            this.color = {r : 0.576, g : 0.847, b : 0.890, a : 1}
         }
     }
 
@@ -151,6 +154,19 @@ export class Polygon extends Geometry<PolygonParams> {
     }
 
     onObjectSelected(): void {
+        const shapeControlGroup = document.createElement("div");
+        shapeControlGroup.id = "shape-control-group";
+        shapeControlGroup.className = "control-group";
+
+        const controls = document.getElementById("controls");
+        controls?.appendChild(shapeControlGroup);
+        
+        chaderUI.setHeader("Polygon Properties", "shape-control-group");
+        chaderUI.setupSlider("ssl", "Number of Vertices", { min: 3, max: 30, step: 1, value: this.sides, slide : (value) => {
+            this.sides = value;
+            drawScene(this.gl, this.program, this.posAttribLocation, this.colorAttribLocation);
+        }}, "shape-control-group");
+
         chaderUI.setupTrasformControls(this.callbacks);
     }
 
@@ -181,8 +197,13 @@ export class Polygon extends Geometry<PolygonParams> {
         
         finalArray.push(this.x, this.y, this.vertices[2], this.vertices[3], this.vertices[4]);
         for (let i = 0; i < this.sides; i++) {
-            finalArray.push(translatedVertices[i][0], translatedVertices[i][1], 
-                this.vertices[(i+1)*5 + 2], this.vertices[(i+1)*5 + 3], this.vertices[(i+1)*5 + 4]);
+            finalArray.push(translatedVertices[i][0], translatedVertices[i][1])
+
+            if (this.vertices[(i+1)*5 + 2] == undefined) {
+                finalArray.push(this.color.r, this.color.g, this.color.b)
+            } else {
+                finalArray.push(this.vertices[(i+1)*5 + 2], this.vertices[(i+1)*5 + 3], this.vertices[(i+1)*5 + 4]);
+            }
         }
 
         this.vertices = finalArray;

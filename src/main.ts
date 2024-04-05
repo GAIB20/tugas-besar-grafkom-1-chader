@@ -217,7 +217,7 @@ function registerListeners(gl : WebGL2RenderingContext, program : WebGLProgram, 
             case 'polygon' : {
                 SelectedTypeToCreate = PolygonOption;
                 GeometryParams = {
-                    x : 0, y : 0, sidesLength : 5, sides : 5
+                    x : 0, y : 0, sidesLength : 5, sides : 5, color : { r: 0.576, g: 0.847, b: 0.890 }
                 }
                 break;
             }
