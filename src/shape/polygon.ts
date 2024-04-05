@@ -30,6 +30,7 @@ export class Polygon extends Geometry<PolygonParams> {
     public sidesLength : number;
     public sides : number;
 
+    private regularPolygon: boolean = true;
 
     public callbacks : TransformationCallbacks = {
         onTranslateX: (value) => {
@@ -65,40 +66,19 @@ export class Polygon extends Geometry<PolygonParams> {
     }
 
     setGeometry(gl : WebGL2RenderingContext) : void {
-        const angle = 360/this.sides;
-        console.log("angle", angle);
-        
-        console.log("sideslength", this.sidesLength);
-
-        const vertices: [number, number][] = []
-        
-        for (let i = 0; i < this.sides; i++) {
-            const tempX = this.sidesLength * Math.cos((i * angle * Math.PI) / 180);
-            const tempY = this.sidesLength * Math.sin((i * angle * Math.PI) / 180);
-            vertices.push([tempX, tempY]);
+        if (this.regularPolygon) {
+            this.calcVertexLocations();
         }
-        console.log("vertices", vertices);
-
-        const centroid: [number, number] = vertices.reduce(([cx, cy], [xi, yi]) => [cx + xi, cy + yi], [0, 0]);
-        const centroidX = centroid[0] / this.sides;
-        const centroidY = centroid[1] / this.sides;
-        console.log("centroid", centroid);
-
-        const translationX = this.x - centroidX;
-        const translationY = this.y - centroidY;
-        const translatedVertices = vertices.map(([xi, yi]) => [xi + translationX, yi + translationY]);
-
-        console.log("translated", translatedVertices);
 
         const finalArray: number[] = [];
-        const indices: number[] = [];
-        
-        finalArray.push(this.x, this.y)
-        finalArray.push(0.576, 0.847, 0.890);
-        for (let i = 0; i < this.sides; i++) {
-            finalArray.push(translatedVertices[i][0], translatedVertices[i][1]);
-            finalArray.push(0.576, 0.847, 0.890);
+
+        for (let i = 0; i < this.sides + 1; i++) {
+            finalArray.push(this.vertexLocations[i*2], this.vertexLocations[i*2+1], 0.576, 0.847, 0.890);
         }
+
+        console.log(finalArray);
+
+        const indices: number[] = [];
 
         for (let i = 0; i < this.sides; i++) {
             if (i == this.sides-1) {
@@ -107,9 +87,6 @@ export class Polygon extends Geometry<PolygonParams> {
                 indices.push(0, i+1, i+2);
             }
         }
-
-        console.log("final array", finalArray);
-        console.log("indices", indices);
 
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(finalArray), gl.STATIC_DRAW);
@@ -172,11 +149,39 @@ export class Polygon extends Geometry<PolygonParams> {
     }
 
     calcVertexLocations(): void {
-        // TODO: Implement this   
+        const angle = 360/this.sides;
+        const vertices: [number, number][] = []
+        
+        for (let i = 0; i < this.sides; i++) {
+            const tempX = this.sidesLength * Math.cos((i * angle * Math.PI) / 180);
+            const tempY = this.sidesLength * Math.sin((i * angle * Math.PI) / 180);
+            vertices.push([tempX, tempY]);
+        }
+
+        const centroid: [number, number] = vertices.reduce(([cx, cy], [xi, yi]) => [cx + xi, cy + yi], [0, 0]);
+        const centroidX = centroid[0] / this.sides;
+        const centroidY = centroid[1] / this.sides;
+
+        const translationX = this.x - centroidX;
+        const translationY = this.y - centroidY;
+        const translatedVertices = vertices.map(([xi, yi]) => [xi + translationX, yi + translationY]);
+
+        const finalArray: number[] = [];
+        
+        finalArray.push(this.x, this.y)
+        for (let i = 0; i < this.sides; i++) {
+            finalArray.push(translatedVertices[i][0], translatedVertices[i][1]);
+        }
+
+        this.vertexLocations = finalArray;
     }
 
     onVertexMoved(index: number, deltaX: number, deltaY: number): void {
-        // TODO: Implement this
+        this.regularPolygon = false;
+
+        this.vertexLocations[index*2] += deltaX / 50;
+        this.vertexLocations[index*2+1] -= deltaY / 50;
+        drawScene(this.gl, this.program, this.posAttribLocation, this.colorAttribLocation);
     }
 }
 
