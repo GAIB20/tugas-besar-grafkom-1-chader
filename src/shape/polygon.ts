@@ -60,7 +60,7 @@ export class Polygon extends Geometry<PolygonParams> {
     }
 
     constructor(gl : WebGL2RenderingContext, program : WebGLProgram, posAttribLocation : number, colorAttribLocation : number, params : PolygonParams) {
-        super(gl, program, posAttribLocation, colorAttribLocation);
+        super(gl, program, posAttribLocation, colorAttribLocation, GeometryType.POLYGON);
         const {x, y, sidesLength, sides} = params;
         this.x = x;
         this.y = y;

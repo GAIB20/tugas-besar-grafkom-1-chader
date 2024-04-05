@@ -12,6 +12,7 @@ export interface GeometryOption {
 export abstract class Geometry<T> {
     public static numOfObjects : number = 0;
     public id : number;
+    public type : GeometryType;
 
     public translation = [0, 0];
     public angleInRadians = 0;
@@ -25,7 +26,7 @@ export abstract class Geometry<T> {
     protected vBuffer : WebGLBuffer | null;
     protected iBuffer : WebGLBuffer | null;
 
-    constructor(gl : WebGL2RenderingContext, program : WebGLProgram, posAttribLocation : number, colorAttribLocation : number) {
+    constructor(gl : WebGL2RenderingContext, program : WebGLProgram, posAttribLocation : number, colorAttribLocation : number, type : GeometryType) {
         Geometry.numOfObjects += 1;
 
         this.id = Geometry.numOfObjects;
@@ -33,6 +34,7 @@ export abstract class Geometry<T> {
         this.program = program;
         this.posAttribLocation = posAttribLocation;
         this.colorAttribLocation = colorAttribLocation;
+        this.type = type;
 
         this.vBuffer = gl.createBuffer();
         this.iBuffer = gl.createBuffer();
