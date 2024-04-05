@@ -60,7 +60,7 @@ export class Line extends Geometry<LineParams> {
     }
 
     constructor(gl : WebGL2RenderingContext, program : WebGLProgram, posAttribLocation : number, colorAttribLocation : number, params : LineParams) {
-        super(gl, program, posAttribLocation, colorAttribLocation);
+        super(gl, program, posAttribLocation, colorAttribLocation, GeometryType.LINE);
         this.x1 = params.x1;
         this.y1 = params.y1;
         this.x2 = params.x2;
