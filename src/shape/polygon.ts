@@ -15,10 +15,6 @@ export const PolygonOption : GeometryOption = {
         return GeometryType.POLYGON;
     },
 
-    getShapeName() {
-        return "Polygon";
-    },
-
     onPrepareObject() {
         
     },

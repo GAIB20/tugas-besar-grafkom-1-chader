@@ -16,10 +16,6 @@ export const LineOption : GeometryOption = {
         return GeometryType.LINE;
     },
 
-    getShapeName() {
-        return "Line";
-    },
-
     onPrepareObject() {
         
     },

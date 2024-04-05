@@ -14,10 +14,6 @@ export const SquareOption : GeometryOption = {
         return GeometryType.SQUARE;
     },
 
-    getShapeName() {
-        return "Square";
-    },
-
     onPrepareObject() {
         
     },

@@ -15,10 +15,6 @@ export const RectangleOption : GeometryOption = {
         return GeometryType.RECTANGLE;
     },
 
-    getShapeName() {
-        return "Rectangle";
-    },
-
     onPrepareObject() {
         
     },

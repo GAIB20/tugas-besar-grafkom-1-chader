@@ -4,9 +4,8 @@ export enum GeometryType {
 
 export interface GeometryOption {
     getGeometryType : () => GeometryType;
-    getShapeName : () => string,
-    onPrepareObject : () => void,                           // Prepare UI to set initial object
-    onUnprepareObject : () => void,                         // Clean UI 
+    onPrepareObject? : () => void,                           // Prepare UI to set initial object
+    onUnprepareObject? : () => void,                         // Clean UI 
 }
 
 export abstract class Geometry<T> {
