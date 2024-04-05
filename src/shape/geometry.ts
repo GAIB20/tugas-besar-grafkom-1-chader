@@ -63,30 +63,31 @@ export abstract class Geometry<T> {
 
         let minDist = Number.MAX_VALUE;
         let minIndex = -1;
-        for (let i = 0; i < this.vertices.length; i += 5) {
+        for (let i = 0; i < this.vertices.length; i += 6) {
             const dist = (this.vertices[i] - x) ** 2 + (this.vertices[i + 1] - y) ** 2;
             if (dist < minDist) {
                 minDist = dist;
-                minIndex = i / 5;
+                minIndex = i / 6;
             }
         }
 
         return minIndex;
     }
     changeVertexColor(color : RGBA, vertexIdx : number) : void {
-        this.vertices[vertexIdx * 5 + 2] = color.r;
-        this.vertices[vertexIdx * 5 + 3] = color.g;
-        this.vertices[vertexIdx * 5 + 4] = color.b;
+        this.vertices[vertexIdx * 6 + 2] = color.r;
+        this.vertices[vertexIdx * 6 + 3] = color.g;
+        this.vertices[vertexIdx * 6 + 4] = color.b;
+        this.vertices[vertexIdx * 6 + 5] = color.a;
 
         drawScene(this.gl, this.program, this.posAttribLocation, this.colorAttribLocation);
     }
 
     getVertexColor(vertexIdx : number) : RGBA {
         return {
-            r: this.vertices[vertexIdx * 5 + 2],
-            g: this.vertices[vertexIdx * 5 + 3],
-            b: this.vertices[vertexIdx * 5 + 4],
-            a: 1
+            r: this.vertices[vertexIdx * 6 + 2],
+            g: this.vertices[vertexIdx * 6 + 3],
+            b: this.vertices[vertexIdx * 6 + 4],
+            a: this.vertices[vertexIdx * 6 + 5]
         };
     }
 }

@@ -69,12 +69,12 @@ export class Polygon extends Geometry<PolygonParams> {
 
         if (params.color) {
             for (let i = 0; i < sides+1; i++) {
-                this.vertices.push(0, 0, params.color.r, params.color.g, params.color.b);
+                this.vertices.push(0, 0, params.color.r, params.color.g, params.color.b, params.color.a);
             }
             this.color = params.color;
         } else {
             for (let i = 0; i < sides+1; i++) {
-                this.vertices.push(0, 0, 0.576, 0.847, 0.890);
+                this.vertices.push(0, 0, 0.576, 0.847, 0.890, 1);
             }
             this.color = {r : 0.576, g : 0.847, b : 0.890, a : 1}
         }
@@ -88,7 +88,10 @@ export class Polygon extends Geometry<PolygonParams> {
         const finalArray: number[] = [];
 
         for (let i = 0; i < this.sides + 1; i++) {
-            finalArray.push(this.vertices[i*5], this.vertices[i*5+1], this.vertices[i*5+2], this.vertices[i*5+3], this.vertices[i*5+4]);
+            finalArray.push(
+                this.vertices[i*6], this.vertices[i*6+1], 
+                this.vertices[i*6+2], this.vertices[i*6+3], this.vertices[i*6+4], this.vertices[i*6+5]
+            );
         }
 
         const indices: number[] = [];
@@ -119,7 +122,7 @@ export class Polygon extends Geometry<PolygonParams> {
         var size = 2;
         var type = this.gl.FLOAT;
         var normalize = false;
-        var stride = 5 * Float32Array.BYTES_PER_ELEMENT;
+        var stride = 6 * Float32Array.BYTES_PER_ELEMENT;
         var offset = 0;
         this.gl.vertexAttribPointer(this.posAttribLocation, size, type, normalize, stride, offset);
 
@@ -127,7 +130,7 @@ export class Polygon extends Geometry<PolygonParams> {
         this.gl.enableVertexAttribArray(this.colorAttribLocation);
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vBuffer);
 
-        size = 3;
+        size = 4;
         offset = 2 * Float32Array.BYTES_PER_ELEMENT;
         this.gl.vertexAttribPointer(this.colorAttribLocation, size, type, normalize, stride, offset);
 
@@ -203,10 +206,10 @@ export class Polygon extends Geometry<PolygonParams> {
         for (let i = 0; i < this.sides; i++) {
             finalArray.push(translatedVertices[i][0], translatedVertices[i][1])
 
-            if (this.vertices[(i+1)*5 + 2] == undefined) {
-                finalArray.push(this.color.r, this.color.g, this.color.b)
+            if (this.vertices[(i+1)*6 + 2] == undefined) {
+                finalArray.push(this.color.r, this.color.g, this.color.b, this.color.a);
             } else {
-                finalArray.push(this.vertices[(i+1)*5 + 2], this.vertices[(i+1)*5 + 3], this.vertices[(i+1)*5 + 4]);
+                finalArray.push(this.vertices[(i+1)*6 + 2], this.vertices[(i+1)*6 + 3], this.vertices[(i+1)*6 + 4], this.vertices[(i+1)*6 + 5]);
             }
         }
 
@@ -216,12 +219,12 @@ export class Polygon extends Geometry<PolygonParams> {
     onVertexMoved(index: number, deltaX: number, deltaY: number): void {
         this.regularPolygon = false;
 
-        this.vertices[index*5] += deltaX / 50;
-        this.vertices[index*5+1] -= deltaY / 50;
+        this.vertices[index*6] += deltaX / 50;
+        this.vertices[index*6+1] -= deltaY / 50;
 
         let tempVertices : number[] = this.vertices;
     
-        this.vertices = this.convexHull(this.vertices, 5);
+        this.vertices = this.convexHull(this.vertices, 6);
 
         drawScene(this.gl, this.program, this.posAttribLocation, this.colorAttribLocation);
 

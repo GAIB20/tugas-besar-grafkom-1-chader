@@ -66,11 +66,11 @@ export class Line extends Geometry<LineParams> {
     
         if (params.color) {
             for (let i = 0; i < 2; i++) {
-                this.vertices.push(0, 0, params.color.r, params.color.g, params.color.b);
+                this.vertices.push(0, 0, params.color.r, params.color.g, params.color.b, params.color.a);
             }
         } else {
             for (let i = 0; i < 2; i++) {
-                this.vertices.push(0, 0, 0.576, 0.847, 0.890);
+                this.vertices.push(0, 0, 0.576, 0.847, 0.890, 1.0);
             }
         }
     }
@@ -97,13 +97,13 @@ export class Line extends Geometry<LineParams> {
         var size = 2;          
         var type = this.gl.FLOAT;
         var normalize = false;
-        var stride = 5 * Float32Array.BYTES_PER_ELEMENT;
+        var stride = 6 * Float32Array.BYTES_PER_ELEMENT;
         var offset = 0;
         this.gl.vertexAttribPointer(this.posAttribLocation, size, type, normalize, stride, offset);
         this.gl.enableVertexAttribArray(this.colorAttribLocation);
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vBuffer);
 
-        size = 3;
+        size = 4;
         offset = 2 * Float32Array.BYTES_PER_ELEMENT;
         this.gl.vertexAttribPointer(this.colorAttribLocation, size, type, normalize, stride, offset);
 
@@ -161,26 +161,26 @@ export class Line extends Geometry<LineParams> {
         this.vertices[0] = this.x - dx;
         this.vertices[1] = this.y - dy;
 
-        this.vertices[5] = this.x + dx;
-        this.vertices[6] = this.y + dy;
+        this.vertices[6] = this.x + dx;
+        this.vertices[7] = this.y + dy;
     }
 
     onVertexMoved(index: number, deltaX: number, deltaY: number): void {
         const dx = deltaX / 50;
         const dy = deltaY / 50;
 
-        this.vertices[index * 5] += dx;
-        this.vertices[index * 5 + 1] -= dy;
+        this.vertices[index * 6] += dx;
+        this.vertices[index * 6 + 1] -= dy;
 
-        this.x = (this.vertices[0] + this.vertices[5]) / 2;
-        this.y = (this.vertices[1] + this.vertices[6]) / 2;
+        this.x = (this.vertices[0] + this.vertices[6]) / 2;
+        this.y = (this.vertices[1] + this.vertices[7]) / 2;
 
-        this.length = Math.sqrt((this.vertices[5] - this.vertices[0]) ** 2 + (this.vertices[6] - this.vertices[1]) ** 2);
+        this.length = Math.sqrt((this.vertices[6] - this.vertices[0]) ** 2 + (this.vertices[7] - this.vertices[1]) ** 2);
 
         this.length = Math.min(this.length, 30);
         this.length = Math.max(this.length, 0.01);
 
-        this.internalAngle = Math.atan2(this.vertices[6] - this.vertices[1], this.vertices[5] - this.vertices[0]);
+        this.internalAngle = Math.atan2(this.vertices[7] - this.vertices[1], this.vertices[6] - this.vertices[0]);
 
         const lenSlider = document.getElementById("llen") as HTMLInputElement;
         lenSlider.value = this.length.toFixed(2).toString();

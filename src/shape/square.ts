@@ -66,11 +66,11 @@ export class Square extends Geometry<SquareParams> {
 
         if (params.color) {
             for (let i = 0; i < 4; i++) {
-                this.vertices.push(0, 0, params.color.r, params.color.g, params.color.b);
+                this.vertices.push(0, 0, params.color.r, params.color.g, params.color.b, params.color.a);
             }
         } else {
             for (let i = 0; i < 4; i++) {
-                this.vertices.push(0, 0, 0.576, 0.847, 0.890);
+                this.vertices.push(0, 0, 0.576, 0.847, 0.890, 1.0);
             }
         }
     }
@@ -101,7 +101,7 @@ export class Square extends Geometry<SquareParams> {
         var size = 2;
         var type = this.gl.FLOAT;
         var normalize = false;
-        var stride = 5 * Float32Array.BYTES_PER_ELEMENT;
+        var stride = 6 * Float32Array.BYTES_PER_ELEMENT;
         var offset = 0;
         this.gl.vertexAttribPointer(this.posAttribLocation, size, type, normalize, stride, offset);
 
@@ -109,7 +109,7 @@ export class Square extends Geometry<SquareParams> {
         this.gl.enableVertexAttribArray(this.colorAttribLocation);
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vBuffer);
 
-        size = 3;
+        size = 4;
         offset = 2 * Float32Array.BYTES_PER_ELEMENT;
         this.gl.vertexAttribPointer(this.colorAttribLocation, size, type, normalize, stride, offset);
 
@@ -169,10 +169,10 @@ export class Square extends Geometry<SquareParams> {
         const y2 = this.y + halfSideLength;
 
         this.vertices = [
-            x1, y1, this.vertices[2], this.vertices[3], this.vertices[4],
-            x1, y2, this.vertices[7], this.vertices[8], this.vertices[9],
-            x2, y1, this.vertices[12], this.vertices[13], this.vertices[14],
-            x2, y2, this.vertices[17], this.vertices[18], this.vertices[19]
+            x1, y1, this.vertices[2], this.vertices[3], this.vertices[4], this.vertices[5],
+            x1, y2, this.vertices[8], this.vertices[9], this.vertices[10], this.vertices[11],
+            x2, y1, this.vertices[14], this.vertices[15], this.vertices[16], this.vertices[17],
+            x2, y2, this.vertices[20], this.vertices[21], this.vertices[22], this.vertices[23]
         ];
     }
 

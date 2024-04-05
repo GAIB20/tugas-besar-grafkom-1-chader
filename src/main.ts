@@ -217,7 +217,7 @@ function registerListeners(gl : WebGL2RenderingContext, program : WebGLProgram, 
             case 'polygon' : {
                 SelectedTypeToCreate = PolygonOption;
                 GeometryParams = {
-                    x : 0, y : 0, sidesLength : 5, sides : 5, color : { r: 0.576, g: 0.847, b: 0.890 }
+                    x : 0, y : 0, sidesLength : 5, sides : 5, color : { r: 0.576, g: 0.847, b: 0.890, a: 1.0 }
                 }
                 break;
             }
@@ -245,6 +245,7 @@ function registerListeners(gl : WebGL2RenderingContext, program : WebGLProgram, 
     // Clear the scene
     document.getElementById('clear-canvas-btn')?.addEventListener('click', () => {
         ObjectsInScene = [];
+        chaderUI.removeALlOptionsFromDropdown('shape-dropdown');
         drawScene(gl, program, posAttribLocation, colorAttribLocation);
     });
 
@@ -304,13 +305,13 @@ function registerListeners(gl : WebGL2RenderingContext, program : WebGLProgram, 
         if (selectedVertexIdx !== -1) {
             draggingVertex = true;
             selectedVertexHint = new Square(gl, program, posAttribLocation, colorAttribLocation, {
-                x: ActiveObject.vertices[selectedVertexIdx * 5],
-                y: ActiveObject.vertices[selectedVertexIdx * 5 + 1],
+                x: ActiveObject.vertices[selectedVertexIdx * 6],
+                y: ActiveObject.vertices[selectedVertexIdx * 6 + 1],
                 sideLength: 0.2,
                 color: {r : 1, g : 0, b : 0, a : 1}
             }, true);
 
-            drawScene(gl, program, posAttribLocation, colorAttribLocation);
+            ActiveObject?.onVertexMoved(selectedVertexIdx, 0, 0);
             selectedVertexHint.drawGeometry();
 
             const selectedVertexSpan = document.getElementById('selected-vertex') as HTMLSpanElement;
@@ -318,6 +319,8 @@ function registerListeners(gl : WebGL2RenderingContext, program : WebGLProgram, 
 
             const colorPicker = document.getElementById('vertex-color') as HTMLInputElement;
             colorPicker.value = rgbToHex(ActiveObject.getVertexColor(selectedVertexIdx));
+
+           
         }
     });
 
@@ -328,8 +331,8 @@ function registerListeners(gl : WebGL2RenderingContext, program : WebGLProgram, 
 
             ActiveObject?.onVertexMoved(selectedVertexIdx, deltaX, deltaY);
             if (selectedVertexHint) {
-                selectedVertexHint.x = ActiveObject.vertices[selectedVertexIdx * 5];
-                selectedVertexHint.y = ActiveObject.vertices[selectedVertexIdx * 5 + 1];
+                selectedVertexHint.x = ActiveObject.vertices[selectedVertexIdx * 6];
+                selectedVertexHint.y = ActiveObject.vertices[selectedVertexIdx * 6 + 1];
 
                 selectedVertexHint.drawGeometry();
             }

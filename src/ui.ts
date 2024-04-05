@@ -23,6 +23,7 @@ export const chaderUI = {
     setupTrasformControls,
     cleanTransformControls,
     addOptionToDropdown,
+    removeALlOptionsFromDropdown,
     setupVertexControls
 }
 
@@ -127,6 +128,15 @@ function addOptionToDropdown(id : string, option : string) {
     optionElement.value = option;
     optionElement.text = option;
     select.appendChild(optionElement);
+}
+
+function removeALlOptionsFromDropdown(id : string) {
+    const select = document.getElementById(id) as HTMLSelectElement;
+    if (!select) {
+        throw new Error("Could not find dropdown with id:" + id);
+    }
+
+    select.innerHTML = '';
 }
 
 function setupTrasformControls(callbacks : TransformationCallbacks) {
