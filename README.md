@@ -3,12 +3,14 @@
 This project is a web program that mimic the photoshop draw shape and line feature. With WebGL platform, the shape and sizes is drawed, edited, and visualize in a web application containing multiple option to transform, add, and save the shape model. The shape that implemented is line, square, rectangle, and polygon each with its transformation option that relevant to the shape.
 
 ## Feature
-1. Geometry Transformation: translation, dilatation, shear, and rotation
-2. Modify the shape with corner point with slider and drag and drop
-3. Change corner point color
-4. Save and load shape model
-5. Convex Hull
-6. Fade in Animation
+1. Draw basic shape (Line, Square, Rectangle, and Polygon)
+2. Geometry Transformation: translation, dilatation, shear, and rotation
+3. Modify the shape with moving corner point with slider and drag and drop
+4. Change corner point color
+5. Save and load shape model
+6. Extra Feature: Convex Hull
+7. Extra Feature: Fade in Animation
+8. Extra Feature: Advanced UX
 
 ## How to Run 🚀
 1. Clone this repo to your local directory.
