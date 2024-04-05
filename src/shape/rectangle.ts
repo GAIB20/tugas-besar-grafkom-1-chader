@@ -180,7 +180,55 @@ export class Rectangle extends Geometry<RectangleParams> {
         ];
     }
 
-    onVertexMoved(index: number, x: number, y: number): void {
+    onVertexMoved(index: number, deltaX: number, deltaY: number): void {
+        const dx = deltaX / 50;
+        const dy = deltaY / 50;
+
+        switch (index) {
+            case 0:
+                this.x += dx;
+                this.y -= dy;
+                this.width -= dx * 2;
+                this.height += dy * 2;
+                break;
+            case 1:
+                this.x += dx;
+                this.y -= dy;
+                this.width -= dx * 2;
+                this.height -= dy * 2;
+                break;
+            case 2:
+                this.x += dx;
+                this.y -= dy;
+                this.width += dx * 2;
+                this.height += dy * 2;
+                break;
+            case 3:
+                this.x += dx;
+                this.y -= dy;
+                this.width += dx * 2;
+                this.height -= dy * 2;
+                break;
+        }
+
+        this.width = Math.max(0.01, this.width);
+        this.width = Math.min(30, this.width);
+
+        const widthSlider = document.getElementById("rw") as HTMLInputElement;
+        widthSlider.value = this.width.toString();
         
+        const widthValueSpan = document.getElementById("rw-value") as HTMLSpanElement;
+        widthValueSpan.innerText = this.width.toFixed(2);
+
+        this.height = Math.max(0.01, this.height);
+        this.height = Math.min(30, this.height);
+
+        const heightSlider = document.getElementById("rh") as HTMLInputElement;
+        heightSlider.value = this.height.toString();
+        
+        const heightValueSpan = document.getElementById("rh-value") as HTMLSpanElement;
+        heightValueSpan.innerText = this.height.toFixed(2);
+
+        drawScene(this.gl, this.program, this.posAttribLocation, this.colorAttribLocation);
     }
 }
