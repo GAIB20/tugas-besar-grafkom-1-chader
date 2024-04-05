@@ -2,6 +2,7 @@ import { Geometry, GeometryOption, GeometryType } from "./shape/geometry.js";
 import { Rectangle, RectangleOption } from "./shape/rectangle.js";
 import { Polygon, PolygonOption } from "./shape/polygon.js";
 import { Square, SquareOption } from "./shape/square.js";
+import { Line, LineOption } from "./shape/line.js";
 
 import { createProgram, createShader } from "./utils/shaderUtils.js";
 import { chaderUI } from "./ui.js";
@@ -28,6 +29,14 @@ function createObject(gl : WebGL2RenderingContext, program : WebGLProgram, posAt
     var instance : Geometry<any>;
     var idNumber : number;
     switch (SelectedTypeToCreate.getGeometryType()) {
+        case (GeometryType.LINE) : {
+            instance = new Line(gl, program, posAttribLocation, colorsLocation, GeometryParams);
+            chaderUI.addOptionToDropdown('shape-dropdown', instance.id.toString());
+            ObjectsInScene.push(instance);
+            setActiveObject(instance);
+            var idNumber = instance.id;
+            break;
+        }
         case (GeometryType.RECTANGLE) : {
             instance = new Rectangle(gl, program, posAttribLocation, colorsLocation, GeometryParams);
             chaderUI.addOptionToDropdown('shape-dropdown', instance.id.toString());
@@ -56,6 +65,7 @@ function createObject(gl : WebGL2RenderingContext, program : WebGLProgram, posAt
             idNumber = -1;
         }
     }
+    console.log("Created object with id: " + idNumber);
     changeSelectedObjectUi(idNumber);
     drawScene(gl, program, posAttribLocation, colorsLocation);
 }
@@ -135,6 +145,13 @@ function main() {
         console.log("Value: " + selectedValue);
 
         switch(selectedValue) {
+            case 'line': {
+                SelectedTypeToCreate = LineOption;
+                GeometryParams = {
+                    x1 : 0, y1 : 0, x2 : 10, y2 : 10
+                }
+                break;
+            }
             case 'rectangle': {
                 SelectedTypeToCreate = RectangleOption;
                 GeometryParams = {

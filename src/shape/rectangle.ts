@@ -102,7 +102,7 @@ export class Rectangle extends Geometry<RectangleParams> {
         // Tell the attribute how to get data out of the buffer
         this.gl.enableVertexAttribArray(this.posAttribLocation);
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vBuffer);
-
+        
         var size = 2;
         var type = this.gl.FLOAT;
         var normalize = false;
