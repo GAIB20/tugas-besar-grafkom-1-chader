@@ -70,35 +70,56 @@ export class Polygon extends Geometry<PolygonParams> {
 
     setGeometry(gl : WebGL2RenderingContext) : void {
         const angle = 360/this.sides;
+        console.log("angle", angle);
+        
+        console.log("sideslength", this.sidesLength);
 
         const vertices: [number, number][] = []
+        
         for (let i = 0; i < this.sides; i++) {
             const tempX = this.sidesLength * Math.cos((i * angle * Math.PI) / 180);
             const tempY = this.sidesLength * Math.sin((i * angle * Math.PI) / 180);
             vertices.push([tempX, tempY]);
         }
+        console.log("vertices", vertices);
 
         const centroid: [number, number] = vertices.reduce(([cx, cy], [xi, yi]) => [cx + xi, cy + yi], [0, 0]);
         const centroidX = centroid[0] / this.sides;
         const centroidY = centroid[1] / this.sides;
+        console.log("centroid", centroid);
 
         const translationX = this.x - centroidX;
         const translationY = this.y - centroidY;
         const translatedVertices = vertices.map(([xi, yi]) => [xi + translationX, yi + translationY]);
 
+        console.log("translated", translatedVertices);
+
         const finalArray: number[] = [];
+        const indices: number[] = [];
+        
+        finalArray.push(this.x, this.y)
+        finalArray.push(0.576, 0.847, 0.890);
         for (let i = 0; i < this.sides; i++) {
             finalArray.push(translatedVertices[i][0], translatedVertices[i][1]);
             finalArray.push(0.576, 0.847, 0.890);
-            finalArray.push(translatedVertices[(i+1)%this.sides][0], translatedVertices[(i+1)%this.sides][1]);
-            finalArray.push(0.576, 0.847, 0.890);
-            finalArray.push(this.x, this.y);
-            finalArray.push(0.576, 0.847, 0.890);
         }
 
-        console.log("tes", finalArray);
+        for (let i = 0; i < this.sides; i++) {
+            if (i == this.sides-1) {
+                indices.push(0, i+1, 1);
+            } else {
+                indices.push(0, i+1, i+2);
+            }
+        }
 
+        console.log("final array", finalArray);
+        console.log("indices", indices);
+
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(finalArray), gl.STATIC_DRAW);
+
+        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.iBuffer);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW)
     }
 
     drawGeometry() : void {
@@ -142,9 +163,8 @@ export class Polygon extends Geometry<PolygonParams> {
 
         // Draw the rectanthis.gle
         var primitiveType = this.gl.TRIANGLES;
-        var offset = 0;
-        var count = 150;
-        this.gl.drawArrays(primitiveType, offset, count);
+        var count = this.sides*3;
+        this.gl.drawElements(primitiveType, count, this.gl.UNSIGNED_SHORT, 0);
     }
 
     onObjectSelected(): void {

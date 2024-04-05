@@ -89,8 +89,6 @@ function main() {
         console.log('Selected: ' + value);
     });
 
-
-
     // Get the canvas element
     const canvas = document.querySelector('#webgl-canvas') as HTMLCanvasElement;
     if (!canvas) {
@@ -148,7 +146,7 @@ function main() {
             case 'polygon' : {
                 SelectedTypeToCreate = PolygonOption;
                 GeometryParams = {
-                    x : 0, y : 0, sidesLength : 10,
+                    x : 0, y : 0, sidesLength : 10, sides : 10
                 }
                 break;
             }
@@ -174,6 +172,11 @@ function main() {
     });
 
     initSceneManager(gl, program, positionAttributeLocation, colorsLocation);
+    window.addEventListener('resize', () => {
+        resizeCanvasToDisplaySize();
+        drawScene(gl, program, positionAttributeLocation, colorsLocation);
+    });
+    
     resizeCanvasToDisplaySize();
 
     // Set the viewport
