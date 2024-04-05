@@ -200,7 +200,6 @@ export class Polygon extends Geometry<PolygonParams> {
 
         const finalArray: number[] = [];
         
-        finalArray.push(this.x, this.y, this.vertices[2], this.vertices[3], this.vertices[4]);
         for (let i = 0; i < this.sides; i++) {
             finalArray.push(translatedVertices[i][0], translatedVertices[i][1])
 
@@ -278,34 +277,6 @@ export class Polygon extends Geometry<PolygonParams> {
                 p = q;
         
             } while (p !== leftmostIndex); // repeat until p is the leftmost coordinate
-    
-            // check if the shape has a minimum of 1 unpicked coordinates
-            const hullLength = hull.length;
-            if (hullLength < pointsLength && hullLength > 4*size) {
-                // add any coordinates that hasn't been picked
-                let i;
-                let j;
-                let k;
-                for (i = 0; i < hullLength; i++) {
-                    for (j = 0; j < pointsLength; j++) {
-                        let counter = 0;
-                        for (k = 0; k < size; k++) {
-                            if (hull[i*size + k] == points[j*size + k]) {
-                                counter++;
-                            }
-                        }
-                        
-                        if (counter != size) { // if the current comparison is between 2 different coordinates
-                            for (k = size-1; k >= 0; k--) {
-                                hull.unshift(points[j*size + k]);
-                            }
-    
-                            i = pointsLength;
-                            break;
-                        }
-                    }
-                }
-            }
 
             return hull;   
         }
