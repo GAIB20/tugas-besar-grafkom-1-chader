@@ -14,3 +14,14 @@ export function hexToRgb(hex : string) : RGBA | null {
     a: 1
   } : null;
 }
+
+export function rgbToHex(color : RGBA) : string {
+    const red = Math.round(color.r * 255);
+    const green = Math.round(color.g * 255);
+    const blue = Math.round(color.b * 255);
+    
+    // Convert each component to hexadecimal string and concatenate them
+    const hex = '#' + ((1 << 24) + (red << 16) + (green << 8) + blue).toString(16).slice(1);
+    
+    return hex.toUpperCase(); // Convert to uppercase for consistency
+}

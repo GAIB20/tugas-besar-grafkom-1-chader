@@ -1,13 +1,15 @@
 import { drawScene } from "../main.js";
 import { chaderUI, TransformationCallbacks } from "../ui.js";
 import { matrixTransformer } from "../utils/chaderM3.js";
+import { RGBA } from "../utils/color.js";
 import { Geometry, GeometryOption, GeometryType } from "./geometry.js";
 
 interface RectangleParams {
     x : number, 
     y : number,
     width : number, 
-    height : number
+    height : number,
+    color? : RGBA
 }
 
 export const RectangleOption : GeometryOption = {
@@ -61,20 +63,23 @@ export class Rectangle extends Geometry<RectangleParams> {
         this.y = y;
         this.width = width;
         this.height = height;
+
+        if (params.color) {
+            for (let i = 0; i < 4; i++) {
+                this.vertices.push(0, 0, params.color.r, params.color.g, params.color.b);
+            }
+        } else {
+            for (let i = 0; i < 4; i++) {
+                this.vertices.push(0, 0, 0.576, 0.847, 0.890);
+            }
+        }
     }
 
     setGeometry(gl : WebGL2RenderingContext) : void {
         this.calcVertexLocations();
 
-        const vertices = [
-            this.vertexLocations[0], this.vertexLocations[1], 0.576, 0.847, 0.890,
-            this.vertexLocations[2], this.vertexLocations[3], 0.576, 0.847, 0.890,
-            this.vertexLocations[4], this.vertexLocations[5], 0.576, 0.847, 0.890,
-            this.vertexLocations[6], this.vertexLocations[7], 0.576, 0.847, 0.890
-        ];
-
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
 
         const indices = [
             0, 1, 2,
@@ -168,11 +173,11 @@ export class Rectangle extends Geometry<RectangleParams> {
         const y1 = this.y - halfHeight;
         const y2 = this.y + halfHeight;
 
-        this.vertexLocations = [
-            x1, y1,
-            x1, y2,
-            x2, y1,
-            x2, y2
+        this.vertices = [
+            x1, y1, this.vertices[2], this.vertices[3], this.vertices[4],
+            x1, y2, this.vertices[7], this.vertices[8], this.vertices[9],
+            x2, y1, this.vertices[12], this.vertices[13], this.vertices[14],
+            x2, y2, this.vertices[17], this.vertices[18], this.vertices[19]
         ];
     }
 

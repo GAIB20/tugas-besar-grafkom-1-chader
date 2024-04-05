@@ -1,13 +1,15 @@
 import { drawScene } from "../main.js";
 import { chaderUI, TransformationCallbacks } from "../ui.js";
 import { matrixTransformer } from "../utils/chaderM3.js";
+import { RGBA } from "../utils/color.js";
 import { Geometry, GeometryOption, GeometryType } from "./geometry.js";
 
 interface PolygonParams {
     x : number,
     y : number,
     sidesLength : number,
-    sides : number
+    sides : number,
+    color? : RGBA
 }
 
 export const PolygonOption : GeometryOption = {
@@ -30,7 +32,7 @@ export class Polygon extends Geometry<PolygonParams> {
     public sidesLength : number;
     public sides : number;
 
-    private regularPolygon: boolean = true;
+    public regularPolygon: boolean = true;
 
     public callbacks : TransformationCallbacks = {
         onTranslateX: (value) => {
@@ -63,6 +65,16 @@ export class Polygon extends Geometry<PolygonParams> {
         this.y = y;
         this.sidesLength = sidesLength;
         this.sides = sides;
+
+        if (params.color) {
+            for (let i = 0; i < sides+1; i++) {
+                this.vertices.push(0, 0, params.color.r, params.color.g, params.color.b);
+            }
+        } else {
+            for (let i = 0; i < sides+1; i++) {
+                this.vertices.push(0, 0, 0.576, 0.847, 0.890);
+            }
+        }
     }
 
     setGeometry(gl : WebGL2RenderingContext) : void {
@@ -73,10 +85,8 @@ export class Polygon extends Geometry<PolygonParams> {
         const finalArray: number[] = [];
 
         for (let i = 0; i < this.sides + 1; i++) {
-            finalArray.push(this.vertexLocations[i*2], this.vertexLocations[i*2+1], 0.576, 0.847, 0.890);
+            finalArray.push(this.vertices[i*5], this.vertices[i*5+1], this.vertices[i*5+2], this.vertices[i*5+3], this.vertices[i*5+4]);
         }
-
-        console.log(finalArray);
 
         const indices: number[] = [];
 
@@ -169,19 +179,20 @@ export class Polygon extends Geometry<PolygonParams> {
 
         const finalArray: number[] = [];
         
-        finalArray.push(this.x, this.y)
+        finalArray.push(this.x, this.y, this.vertices[2], this.vertices[3], this.vertices[4]);
         for (let i = 0; i < this.sides; i++) {
-            finalArray.push(translatedVertices[i][0], translatedVertices[i][1]);
+            finalArray.push(translatedVertices[i][0], translatedVertices[i][1], 
+                this.vertices[(i+1)*5 + 2], this.vertices[(i+1)*5 + 3], this.vertices[(i+1)*5 + 4]);
         }
 
-        this.vertexLocations = finalArray;
+        this.vertices = finalArray;
     }
 
     onVertexMoved(index: number, deltaX: number, deltaY: number): void {
         this.regularPolygon = false;
 
-        this.vertexLocations[index*2] += deltaX / 50;
-        this.vertexLocations[index*2+1] -= deltaY / 50;
+        this.vertices[index*5] += deltaX / 50;
+        this.vertices[index*5+1] -= deltaY / 50;
         drawScene(this.gl, this.program, this.posAttribLocation, this.colorAttribLocation);
     }
 }

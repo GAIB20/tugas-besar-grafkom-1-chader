@@ -36,7 +36,7 @@ export function loadScene(
     console.log(sceneData);
     const result : Geometry<any>[] = sceneData.map((obj : any) => {
         var params;
-        var geometry : Geometry<any>;
+        var geometry : Rectangle | Square | Line | Polygon;
         const { translation, angleInRadians, scale  } = obj;
         switch (obj.type) {
             case GeometryType.LINE:
@@ -47,7 +47,8 @@ export function loadScene(
                 geometry.angleInRadians = angleInRadians;
                 geometry.scale = scale;
 
-                geometry.vertexLocations = obj.vertexLocations;
+                geometry.vertices = obj.vertices;
+                geometry.internalAngle = obj.internalAngle;
 
                 return geometry;
             case GeometryType.SQUARE:
@@ -58,7 +59,7 @@ export function loadScene(
                 geometry.angleInRadians = angleInRadians;
                 geometry.scale = scale;
 
-                geometry.vertexLocations = obj.vertexLocations;
+                geometry.vertices = obj.vertices;
 
                 return geometry;
             case GeometryType.RECTANGLE:
@@ -68,7 +69,7 @@ export function loadScene(
                 geometry.angleInRadians = angleInRadians;
                 geometry.scale = scale;
 
-                geometry.vertexLocations = obj.vertexLocations;
+                geometry.vertices = obj.vertices;
 
                 return geometry;
             case GeometryType.POLYGON:
@@ -79,7 +80,8 @@ export function loadScene(
                 geometry.angleInRadians = angleInRadians;
                 geometry.scale = scale;
 
-                geometry.vertexLocations = obj.vertexLocations;
+                geometry.vertices = obj.vertices;
+                geometry.regularPolygon = obj.regularPolygon;
 
                 return geometry;
         }

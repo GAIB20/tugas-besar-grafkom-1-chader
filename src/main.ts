@@ -7,12 +7,19 @@ import { Line, LineOption } from "./shape/line.js";
 import { createProgram, createShader } from "./utils/shaderUtils.js";
 import { chaderUI } from "./ui.js";
 import { downloadScene, loadScene } from "./utils/sceneManager.js";
+import { hexToRgb, RGBA, rgbToHex } from "./utils/color.js";
 
 var SelectedTypeToCreate : GeometryOption
 var GeometryParams : any;
 
 var ObjectsInScene : Geometry<any>[] = []
 var ActiveObject : Geometry<any>
+
+// Vertex Drag and Drop
+let draggingVertex = false;
+let selectedVertexIdx = -1;
+
+let selectedVertexHint : Square | null = null;
 
 function setActiveObject(obj : Geometry<any>) {
     ActiveObject?.onObjectDeselected();
@@ -92,6 +99,11 @@ function main() {
     chaderUI.setHeader('Choose Shape Instance', 'controls');
     chaderUI.setDropdown('shape-dropdown', 'Instance: ', [], 'controls', (value) => {
         console.log('Selected: ' + value);
+    });
+
+    chaderUI.setupVertexControls((color : string) => {
+        const rgba = hexToRgb(color);
+        changeVertexColor(rgba);
     });
 
     // Get the canvas element
@@ -174,12 +186,6 @@ function changeActiveObjectById(id : number) {
     }
 }
 
-// Vertex Drag and Drop
-let draggingVertex = false;
-let selectedVertexIdx = -1;
-
-let selectedVertexHint : Square | null = null;
-
 function registerListeners(gl : WebGL2RenderingContext, program : WebGLProgram, posAttribLocation : number, colorAttribLocation : number) {
     // Resize and redraw the scene when the window resizes 
     window.addEventListener('resize', () => {
@@ -260,6 +266,14 @@ function registerListeners(gl : WebGL2RenderingContext, program : WebGLProgram, 
 
             // empty the file input
             fileInput.value = '';
+
+            if (ObjectsInScene.length > 0) {
+                setActiveObject(ObjectsInScene[0])
+                changeSelectedObjectUi(ObjectsInScene[0].id);
+                for (const obj of ObjectsInScene) {
+                    chaderUI.addOptionToDropdown('shape-dropdown', obj.id.toString());
+                }
+            }
         };
         reader.readAsText(file);
     });
@@ -284,14 +298,20 @@ function registerListeners(gl : WebGL2RenderingContext, program : WebGLProgram, 
         if (selectedVertexIdx !== -1) {
             draggingVertex = true;
             selectedVertexHint = new Square(gl, program, posAttribLocation, colorAttribLocation, {
-                x: ActiveObject.vertexLocations[selectedVertexIdx * 2],
-                y: ActiveObject.vertexLocations[selectedVertexIdx * 2 + 1],
+                x: ActiveObject.vertices[selectedVertexIdx * 5],
+                y: ActiveObject.vertices[selectedVertexIdx * 5 + 1],
                 sideLength: 0.2,
                 color: {r : 1, g : 0, b : 0, a : 1}
             }, true);
 
             drawScene(gl, program, posAttribLocation, colorAttribLocation);
             selectedVertexHint.drawGeometry();
+
+            const selectedVertexSpan = document.getElementById('selected-vertex') as HTMLSpanElement;
+            selectedVertexSpan.innerText = "Selected Vertex: " + selectedVertexIdx.toString();
+
+            const colorPicker = document.getElementById('vertex-color') as HTMLInputElement;
+            colorPicker.value = rgbToHex(ActiveObject.getVertexColor(selectedVertexIdx));
         }
     });
 
@@ -302,22 +322,26 @@ function registerListeners(gl : WebGL2RenderingContext, program : WebGLProgram, 
 
             ActiveObject?.onVertexMoved(selectedVertexIdx, deltaX, deltaY);
             if (selectedVertexHint) {
-                selectedVertexHint.x = ActiveObject.vertexLocations[selectedVertexIdx * 2];
-                selectedVertexHint.y = ActiveObject.vertexLocations[selectedVertexIdx * 2 + 1];
+                selectedVertexHint.x = ActiveObject.vertices[selectedVertexIdx * 5];
+                selectedVertexHint.y = ActiveObject.vertices[selectedVertexIdx * 5 + 1];
 
                 selectedVertexHint.drawGeometry();
             }
         }
     });
 
-    canvas.addEventListener('mouseup', (event) => {
+    canvas.addEventListener('mouseup', () => {
         draggingVertex = false;
-        selectedVertexIdx = -1;
 
         if (selectedVertexHint) {
             selectedVertexHint = null;
         }
     });
+}
+
+function changeVertexColor(color : RGBA | null) {
+    if (!color) return;
+    ActiveObject?.changeVertexColor(color, selectedVertexIdx);
 }
 
 

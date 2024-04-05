@@ -80,6 +80,22 @@ html, body {
     border: none;
 }
 
+.control-slider::-ms-thumb {
+    background: var(--color-primary);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    outline: none;
+    border: none;
+}
+
+.control-slider::-ms-track {
+    background: transparent;
+    border-color: transparent;
+    color: transparent;
+}
+
 .control-slider-container {
     display: flex;
     justify-content: space-between;
@@ -142,4 +158,25 @@ html, body {
 #scene h2 {
     margin: 0;
     font-size: 0.95rem;
+}
+
+#color-picker-container {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#vertex-color {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 90px;
+    height: 25px;
+    background: transparent;
+    cursor: pointer;
+    border: none;
+}
+
+#vertex-color::-webkit-color-swatch {
+    border: none;
 }

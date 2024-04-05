@@ -22,7 +22,8 @@ export const chaderUI = {
     setDropdown,
     setupTrasformControls,
     cleanTransformControls,
-    addOptionToDropdown
+    addOptionToDropdown,
+    setupVertexControls
 }
 
 function setupSlider(id : string, title : string, options : SliderOptions, containerId : string) {
@@ -165,4 +166,36 @@ function cleanTransformControls() {
     }
 
     controls.remove();
+}
+
+function setupVertexControls (ocVertexColorChange : (color : string) => void) {
+    setHeader("Vertex Controls", "controls");
+
+    const selectedVertex = document.createElement("span");
+    selectedVertex.innerText = "Selected Vertex: None";
+    selectedVertex.id = "selected-vertex";
+
+    const controls = document.getElementById("controls");
+    controls?.appendChild(selectedVertex);
+
+    const colorPickerContainer = document.createElement("div");
+    colorPickerContainer.id = "color-picker-container";
+    controls?.appendChild(colorPickerContainer);
+
+    const colorPicker = document.createElement("input");
+    colorPicker.type = "color";
+    colorPicker.id = "vertex-color";
+    colorPicker.value = "#93D8E3";
+
+    const colorLabel = document.createElement("label");
+    colorLabel.htmlFor = "vertex-color";
+    colorLabel.innerText = "Vertex Color";
+
+    colorPickerContainer.appendChild(colorLabel);
+    colorPickerContainer.appendChild(colorPicker);
+
+    colorPicker.addEventListener("change", (event) => {
+        const colorPicker = event.target as HTMLInputElement;
+        ocVertexColorChange(colorPicker.value);
+    });
 }

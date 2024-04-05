@@ -1,3 +1,6 @@
+import { drawScene } from "../main.js";
+import { RGBA } from "../utils/color.js";
+
 export enum GeometryType {
     LINE, SQUARE, RECTANGLE, POLYGON
 }
@@ -17,7 +20,7 @@ export abstract class Geometry<T> {
     public angleInRadians = 0;
     public scale = [1, 1];
 
-    public vertexLocations : number[] = [];
+    public vertices : number[] = [];
 
     protected gl : WebGL2RenderingContext;
     protected program : WebGLProgram;
@@ -60,14 +63,30 @@ export abstract class Geometry<T> {
 
         let minDist = Number.MAX_VALUE;
         let minIndex = -1;
-        for (let i = 0; i < this.vertexLocations.length; i += 2) {
-            const dist = (this.vertexLocations[i] - x) ** 2 + (this.vertexLocations[i + 1] - y) ** 2;
+        for (let i = 0; i < this.vertices.length; i += 5) {
+            const dist = (this.vertices[i] - x) ** 2 + (this.vertices[i + 1] - y) ** 2;
             if (dist < minDist) {
                 minDist = dist;
-                minIndex = i / 2;
+                minIndex = i / 5;
             }
         }
 
         return minIndex;
+    }
+    changeVertexColor(color : RGBA, vertexIdx : number) : void {
+        this.vertices[vertexIdx * 5 + 2] = color.r;
+        this.vertices[vertexIdx * 5 + 3] = color.g;
+        this.vertices[vertexIdx * 5 + 4] = color.b;
+
+        drawScene(this.gl, this.program, this.posAttribLocation, this.colorAttribLocation);
+    }
+
+    getVertexColor(vertexIdx : number) : RGBA {
+        return {
+            r: this.vertices[vertexIdx * 5 + 2],
+            g: this.vertices[vertexIdx * 5 + 3],
+            b: this.vertices[vertexIdx * 5 + 4],
+            a: 1
+        };
     }
 }

@@ -1,13 +1,15 @@
 import { drawScene } from "../main.js";
 import { chaderUI, TransformationCallbacks } from "../ui.js";
 import { matrixTransformer } from "../utils/chaderM3.js";
+import { RGBA } from "../utils/color.js";
 import { Geometry, GeometryOption, GeometryType } from "./geometry.js";
 
 
 interface LineParams {
     x : number,
     y : number,
-    length : number
+    length : number,
+    color? : RGBA
 }
 
 export const LineOption : GeometryOption = {
@@ -61,18 +63,23 @@ export class Line extends Geometry<LineParams> {
         this.x = params.x;
         this.y = params.y;
         this.length = params.length;
+    
+        if (params.color) {
+            for (let i = 0; i < 2; i++) {
+                this.vertices.push(0, 0, params.color.r, params.color.g, params.color.b);
+            }
+        } else {
+            for (let i = 0; i < 2; i++) {
+                this.vertices.push(0, 0, 0.576, 0.847, 0.890);
+            }
+        }
     }
 
     setGeometry(gl : WebGL2RenderingContext) : void {
         this.calcVertexLocations();
 
-        const vertices = [
-            this.vertexLocations[0], this.vertexLocations[1], 0.576, 0.847, 0.890,
-            this.vertexLocations[2], this.vertexLocations[3], 0.576, 0.858, 0.439
-        ]
-
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
 
         const indices = [ 0,1 ]
 
@@ -151,30 +158,29 @@ export class Line extends Geometry<LineParams> {
         const dx = halfLength * Math.cos(this.internalAngle);
         const dy = halfLength * Math.sin(this.internalAngle);
 
-        this.vertexLocations = [
-            this.x - dx, this.y - dy,
-            this.x + dx, this.y + dy
-        ];
+        this.vertices[0] = this.x - dx;
+        this.vertices[1] = this.y - dy;
+
+        this.vertices[5] = this.x + dx;
+        this.vertices[6] = this.y + dy;
     }
 
     onVertexMoved(index: number, deltaX: number, deltaY: number): void {
-        this.regularLine = false;
-
         const dx = deltaX / 50;
         const dy = deltaY / 50;
 
-        this.vertexLocations[index * 2] += dx;
-        this.vertexLocations[index * 2 + 1] -= dy;
+        this.vertices[index * 5] += dx;
+        this.vertices[index * 5 + 1] -= dy;
 
-        this.x = (this.vertexLocations[0] + this.vertexLocations[2]) / 2;
-        this.y = (this.vertexLocations[1] + this.vertexLocations[3]) / 2;
+        this.x = (this.vertices[0] + this.vertices[5]) / 2;
+        this.y = (this.vertices[1] + this.vertices[6]) / 2;
 
-        this.length = Math.sqrt((this.vertexLocations[2] - this.vertexLocations[0]) ** 2 + (this.vertexLocations[3] - this.vertexLocations[1]) ** 2);
+        this.length = Math.sqrt((this.vertices[5] - this.vertices[0]) ** 2 + (this.vertices[6] - this.vertices[1]) ** 2);
 
         this.length = Math.min(this.length, 30);
         this.length = Math.max(this.length, 0.01);
 
-        this.internalAngle = Math.atan2(this.vertexLocations[3] - this.vertexLocations[1], this.vertexLocations[2] - this.vertexLocations[0]);
+        this.internalAngle = Math.atan2(this.vertices[6] - this.vertices[1], this.vertices[5] - this.vertices[0]);
 
         const lenSlider = document.getElementById("llen") as HTMLInputElement;
         lenSlider.value = this.length.toFixed(2).toString();
@@ -183,7 +189,6 @@ export class Line extends Geometry<LineParams> {
         lenSliderValue.innerText = this.length.toFixed(2).toString();
 
         drawScene(this.gl, this.program, this.posAttribLocation, this.colorAttribLocation);
-        this.regularLine = true;
     }
 }
  
