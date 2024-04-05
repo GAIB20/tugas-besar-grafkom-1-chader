@@ -149,6 +149,7 @@ export class Polygon extends Geometry<PolygonParams> {
     }
 
     calcVertexLocations(): void {
+        if (!this.regularPolygon) return;
         const angle = 360/this.sides;
         const vertices: [number, number][] = []
         

@@ -53,6 +53,8 @@ export abstract class Geometry<T> {
     abstract calcVertexLocations() : void;  // Calculate vertex locations
     abstract onVertexMoved(index : number, deltaX : number, deltaY : number) : void; // Update vertex location
     getClosestVertex(x : number, y : number) : number { // Get the closer vertex to the mouse within threshold (return the index)
+        this.calcVertexLocations();
+
         let minDist = Number.MAX_VALUE;
         let minIndex = -1;
         for (let i = 0; i < this.vertexLocations.length; i += 2) {

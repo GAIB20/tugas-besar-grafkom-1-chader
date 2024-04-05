@@ -28,6 +28,9 @@ export class Line extends Geometry<LineParams> {
     public x : number;
     public y : number;
     public length : number;
+    public internalAngle : number = 0;
+
+    private regularLine: boolean = true;
 
     public callbacks : TransformationCallbacks = {
         onTranslateX: (value) => {
@@ -142,16 +145,45 @@ export class Line extends Geometry<LineParams> {
     }
 
     calcVertexLocations(): void {
+        if (!this.regularLine) return;
         const halfLength = this.length / 2;
+        
+        const dx = halfLength * Math.cos(this.internalAngle);
+        const dy = halfLength * Math.sin(this.internalAngle);
 
         this.vertexLocations = [
-            this.x - halfLength, this.y,
-            this.x + halfLength, this.y
+            this.x - dx, this.y - dy,
+            this.x + dx, this.y + dy
         ];
     }
 
     onVertexMoved(index: number, deltaX: number, deltaY: number): void {
-        // TODO : Implement this        
+        this.regularLine = false;
+
+        const dx = deltaX / 50;
+        const dy = deltaY / 50;
+
+        this.vertexLocations[index * 2] += dx;
+        this.vertexLocations[index * 2 + 1] -= dy;
+
+        this.x = (this.vertexLocations[0] + this.vertexLocations[2]) / 2;
+        this.y = (this.vertexLocations[1] + this.vertexLocations[3]) / 2;
+
+        this.length = Math.sqrt((this.vertexLocations[2] - this.vertexLocations[0]) ** 2 + (this.vertexLocations[3] - this.vertexLocations[1]) ** 2);
+
+        this.length = Math.min(this.length, 30);
+        this.length = Math.max(this.length, 0.01);
+
+        this.internalAngle = Math.atan2(this.vertexLocations[3] - this.vertexLocations[1], this.vertexLocations[2] - this.vertexLocations[0]);
+
+        const lenSlider = document.getElementById("llen") as HTMLInputElement;
+        lenSlider.value = this.length.toFixed(2).toString();
+
+        const lenSliderValue = document.getElementById("llen-value") as HTMLSpanElement;
+        lenSliderValue.innerText = this.length.toFixed(2).toString();
+
+        drawScene(this.gl, this.program, this.posAttribLocation, this.colorAttribLocation);
+        this.regularLine = true;
     }
 }
  
