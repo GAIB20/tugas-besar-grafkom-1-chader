@@ -1,5 +1,7 @@
 # Chader : WebGL Project IF3260
 ## Description
+
+![Chadder Application](./screenshots/main.png)
 This project is a web program that mimic the photoshop draw shape and line feature. With WebGL platform, the shape and sizes is drawed, edited, and visualize in a web application containing multiple option to transform, add, and save the shape model. The shape that implemented is line, square, rectangle, and polygon each with its transformation option that relevant to the shape.
 
 ## Feature
