@@ -43,6 +43,7 @@ function setupSlider(id : string, title : string, options : SliderOptions, conta
 
     const slider = document.createElement("input");
     const value = document.createElement("span");
+    value.id = id + "-value";
 
     slider.type = "range";
     slider.id = id;

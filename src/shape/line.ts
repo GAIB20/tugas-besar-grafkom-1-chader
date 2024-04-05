@@ -177,5 +177,13 @@ export class Line extends Geometry<LineParams> {
         
         chaderUI.cleanTransformControls();
     }
+
+    calcVertexLocations(): void {
+        // TODO: Implement this
+    }
+
+    onVertexMoved(index: number, deltaX: number, deltaY: number): void {
+        // TODO : Implement this        
+    }
 }
  

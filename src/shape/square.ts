@@ -65,19 +65,15 @@ export class Square extends Geometry<SquareParams> {
     }
 
     setGeometry(gl : WebGL2RenderingContext) : void {
-        const halfSideLength = this.sideLength / 2;
-
-        const x1 = this.x - halfSideLength;
-        const x2 = this.x + halfSideLength;
-        const y1 = this.y - halfSideLength;
-        const y2 = this.y + halfSideLength;
+        this.calcVertexLocations();
 
         const vertices = [
-            x1, y1, 0.576, 0.847, 0.890,
-            x2, y1, 0.576, 0.847, 0.890,
-            x1, y2, 0.576, 0.847, 0.890,
-            x2, y2, 0.576, 0.847, 0.890,
-        ]
+            this.vertexLocations[0], this.vertexLocations[1], 0.576, 0.847, 0.890,
+            this.vertexLocations[2], this.vertexLocations[3], 0.576, 0.847, 0.890,
+            this.vertexLocations[4], this.vertexLocations[5], 0.576, 0.847, 0.890,
+            this.vertexLocations[6], this.vertexLocations[7], 0.576, 0.847, 0.890
+        ];
+
 
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
@@ -159,5 +155,60 @@ export class Square extends Geometry<SquareParams> {
         shapeControlGroup?.remove();
 
         chaderUI.cleanTransformControls();
+    }
+
+    calcVertexLocations() {
+        const halfSideLength = this.sideLength / 2;
+
+        const x1 = this.x - halfSideLength;
+        const y1 = this.y - halfSideLength;
+        const x2 = this.x + halfSideLength;
+        const y2 = this.y + halfSideLength;
+
+        this.vertexLocations = [
+            x1, y1,
+            x1, y2,
+            x2, y1,
+            x2, y2
+        ];
+    }
+
+    onVertexMoved(index: number, deltaX: number, deltaY: number): void {
+        const delta = Math.min(Math.abs(deltaX), Math.abs(deltaY)) / 50;
+        const sign = Math.sign(deltaX);
+
+        switch (index) {
+            case 0:
+                this.x += delta * sign;
+                this.y += delta * sign;
+                this.sideLength -= delta * 2 * sign;
+                break;
+            case 1:
+                this.x += delta * sign;
+                this.y -= delta * sign;
+                this.sideLength -= delta * 2 * sign;
+                break;
+            case 2:
+                this.x += delta * sign;
+                this.y -= delta * sign;
+                this.sideLength += delta * 2 * sign;
+                break;
+            case 3:
+                this.x += delta * sign;
+                this.y += delta * sign;
+                this.sideLength += delta * 2 * sign;
+                break;
+        }
+
+        this.sideLength = Math.max(0.01, this.sideLength);
+        this.sideLength = Math.min(30, this.sideLength);
+
+        const sideLengthSlider = document.getElementById("ssl") as HTMLInputElement;
+        sideLengthSlider.value = this.sideLength.toString();
+        
+        const sideLengthValueSpan = document.getElementById("ssl-value") as HTMLSpanElement;
+        sideLengthValueSpan.innerText = this.sideLength.toFixed(2);
+
+        drawScene(this.gl, this.program, this.posAttribLocation, this.colorAttribLocation);
     }
 }

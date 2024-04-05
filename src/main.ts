@@ -140,60 +140,8 @@ function main() {
     const positionAttributeLocation = gl.getAttribLocation(program, 'a_Position');
     const colorsLocation = gl.getAttribLocation(program, "a_Color");
     
-    document.getElementById('button_generate')?.addEventListener('click', () => {
-        var selected = document.getElementById('dropdown_generate') as HTMLSelectElement;
-        var selectedValue = selected.value;
-        console.log("Value: " + selectedValue);
+    registerListeners(gl, program, positionAttributeLocation, colorsLocation);
 
-        switch(selectedValue) {
-            case 'line': {
-                SelectedTypeToCreate = LineOption;
-                GeometryParams = {
-                    x1 : 0, y1 : 0, x2 : 10, y2 : 10
-                }
-                break;
-            }
-            case 'rectangle': {
-                SelectedTypeToCreate = RectangleOption;
-                GeometryParams = {
-                    x : 0, y : 0, width : 12, height: 8
-                }
-                break;
-            }
-            case 'polygon' : {
-                SelectedTypeToCreate = PolygonOption;
-                GeometryParams = {
-                    x : 0, y : 0, sidesLength : 10, sides : 10
-                }
-                break;
-            }
-            case 'square' : {
-                SelectedTypeToCreate = SquareOption;
-                GeometryParams = {
-                    x : 0, y : 0, sideLength : 10
-                }
-                break;
-            }
-        }
-
-        createObject(gl, program, positionAttributeLocation, colorsLocation);
-        
-    });
-
-    document.getElementById('shape-dropdown')?.addEventListener('change', (event) => {
-        var selected = event.target as HTMLSelectElement;
-        var selectedValue = selected.value;
-        console.log("Selected: " + selectedValue);
-        changeActiveObjectById(parseInt(selectedValue));
-        
-    });
-
-    initSceneManager(gl, program, positionAttributeLocation, colorsLocation);
-    window.addEventListener('resize', () => {
-        resizeCanvasToDisplaySize();
-        drawScene(gl, program, positionAttributeLocation, colorsLocation);
-    });
-    
     resizeCanvasToDisplaySize();
 
     // Set the viewport
@@ -231,7 +179,66 @@ function changeActiveObjectById(id : number) {
     }
 }
 
-function initSceneManager(gl : WebGL2RenderingContext, program : WebGLProgram, posAttribLocation : number, colorAttribLocation : number) {
+let draggingVertex = false;
+let selectedVertexIdx = -1;
+
+function registerListeners(gl : WebGL2RenderingContext, program : WebGLProgram, posAttribLocation : number, colorAttribLocation : number) {
+    // Resize and redraw the scene when the window resizes 
+    window.addEventListener('resize', () => {
+        resizeCanvasToDisplaySize();
+        drawScene(gl, program, posAttribLocation, colorAttribLocation);
+    });
+
+    // Button to generate object
+    document.getElementById('button_generate')?.addEventListener('click', () => {
+        var selected = document.getElementById('dropdown_generate') as HTMLSelectElement;
+        var selectedValue = selected.value;
+        console.log("Value: " + selectedValue);
+
+        switch(selectedValue) {
+            case 'line': {
+                SelectedTypeToCreate = LineOption;
+                GeometryParams = {
+                    x1 : 0, y1 : 0, x2 : 10, y2 : 10
+                }
+                break;
+            }
+            case 'rectangle': {
+                SelectedTypeToCreate = RectangleOption;
+                GeometryParams = {
+                    x : 0, y : 0, width : 12, height: 8
+                }
+                break;
+            }
+            case 'polygon' : {
+                SelectedTypeToCreate = PolygonOption;
+                GeometryParams = {
+                    x : 0, y : 0, sidesLength : 10, sides : 10
+                }
+                break;
+            }
+            case 'square' : {
+                SelectedTypeToCreate = SquareOption;
+                GeometryParams = {
+                    x : 0, y : 0, sideLength : 10
+                }
+                break;
+            }
+        }
+
+        createObject(gl, program, posAttribLocation, colorAttribLocation);
+    });
+    
+    // Dropdown to select object type to be created
+    document.getElementById('shape-dropdown')?.addEventListener('change', (event) => {
+        var selected = event.target as HTMLSelectElement;
+        var selectedValue = selected.value;
+        console.log("Selected: " + selectedValue);
+        changeActiveObjectById(parseInt(selectedValue));
+        
+    });
+    
+    // Button for saving and loading scene
     const saveBtn = document.getElementById('scene-save-btn') as HTMLButtonElement;
     saveBtn.addEventListener('click', () => {
         downloadScene(ObjectsInScene);
@@ -258,6 +265,43 @@ function initSceneManager(gl : WebGL2RenderingContext, program : WebGLProgram, p
         };
         reader.readAsText(file);
     });
+
+    // Drag and drop vertex
+    const canvas = document.querySelector('#webgl-canvas') as HTMLCanvasElement;
+    canvas.addEventListener('mousedown', (event) => {
+        resizeCanvasToDisplaySize();
+
+        // Normalize the mouse position to clip space
+        const x = event.offsetX;
+        const y = event.offsetY;
+
+        const clipX = (x / canvas.width) * 2 - 1;
+        const clipY = ((canvas.height - y) / canvas.height) * 2 - 1;
+
+        const worldX = clipX * canvas.width / 64;
+        const worldY = clipY * canvas.height / 64;
+
+        selectedVertexIdx = ActiveObject?.getClosestVertex(worldX, worldY);
+
+        if (selectedVertexIdx !== -1) {
+            draggingVertex = true;
+        }
+    });
+
+    canvas.addEventListener('mousemove', (event) => {
+        if (draggingVertex && selectedVertexIdx !== -1) {
+            const deltaX = event.movementX;
+            const deltaY = event.movementY;
+
+            ActiveObject?.onVertexMoved(selectedVertexIdx, deltaX, deltaY);
+        }
+    });
+
+    canvas.addEventListener('mouseup', (event) => {
+        draggingVertex = false;
+        selectedVertexIdx = -1;
+    });
 }
+
 
 main();

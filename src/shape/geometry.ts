@@ -18,6 +18,8 @@ export abstract class Geometry<T> {
     public angleInRadians = 0;
     public scale = [1, 1];
 
+    protected vertexLocations : number[] = [];
+
     protected gl : WebGL2RenderingContext;
     protected program : WebGLProgram;
     protected posAttribLocation : number;
@@ -48,4 +50,22 @@ export abstract class Geometry<T> {
 
     abstract onObjectSelected() : void;     // Show up controls UI
     abstract onObjectDeselected() : void;   // Clean up controls UI
+
+    abstract calcVertexLocations() : void;  // Calculate vertex locations
+    abstract onVertexMoved(index : number, deltaX : number, deltaY : number) : void; // Update vertex location
+    getClosestVertex(x : number, y : number) : number { // Get the closer vertex to the mouse within threshold (return the index)
+        this.calcVertexLocations();
+
+        let minDist = Number.MAX_VALUE;
+        let minIndex = -1;
+        for (let i = 0; i < this.vertexLocations.length; i += 2) {
+            const dist = (this.vertexLocations[i] - x) ** 2 + (this.vertexLocations[i + 1] - y) ** 2;
+            if (dist < minDist) {
+                minDist = dist;
+                minIndex = i / 2;
+            }
+        }
+
+        return minIndex;
+    }
 }

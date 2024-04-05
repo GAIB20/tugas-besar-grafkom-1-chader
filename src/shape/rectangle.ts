@@ -68,20 +68,14 @@ export class Rectangle extends Geometry<RectangleParams> {
     }
 
     setGeometry(gl : WebGL2RenderingContext) : void {
-        const halfWidth = this.width / 2;
-        const halfHeight = this.height / 2;
-
-        const x1 = this.x - halfWidth;
-        const x2 = this.x + halfWidth;
-        const y1 = this.y - halfHeight;
-        const y2 = this.y + halfHeight;
+        this.calcVertexLocations();
 
         const vertices = [
-            x1, y1, 0.576, 0.847, 0.890,
-            x2, y1, 0.576, 0.847, 0.890,
-            x1, y2, 0.576, 0.847, 0.890,
-            x2, y2, 0.576, 0.847, 0.890,
-        ]
+            this.vertexLocations[0], this.vertexLocations[1], 0.576, 0.847, 0.890,
+            this.vertexLocations[2], this.vertexLocations[3], 0.576, 0.847, 0.890,
+            this.vertexLocations[4], this.vertexLocations[5], 0.576, 0.847, 0.890,
+            this.vertexLocations[6], this.vertexLocations[7], 0.576, 0.847, 0.890
+        ];
 
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
@@ -167,5 +161,26 @@ export class Rectangle extends Geometry<RectangleParams> {
         shapeControlGroup?.remove();
 
         chaderUI.cleanTransformControls();
+    }
+
+    calcVertexLocations() {
+        const halfWidth = this.width / 2;
+        const halfHeight = this.height / 2;
+
+        const x1 = this.x - halfWidth;
+        const x2 = this.x + halfWidth;
+        const y1 = this.y - halfHeight;
+        const y2 = this.y + halfHeight;
+
+        this.vertexLocations = [
+            x1, y1,
+            x1, y2,
+            x2, y1,
+            x2, y2
+        ];
+    }
+
+    onVertexMoved(index: number, x: number, y: number): void {
+        
     }
 }

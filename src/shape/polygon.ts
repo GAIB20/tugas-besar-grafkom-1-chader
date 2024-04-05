@@ -174,5 +174,13 @@ export class Polygon extends Geometry<PolygonParams> {
     onObjectDeselected(): void {
         chaderUI.cleanTransformControls();
     }
+
+    calcVertexLocations(): void {
+        // TODO: Implement this   
+    }
+
+    onVertexMoved(index: number, deltaX: number, deltaY: number): void {
+        // TODO: Implement this
+    }
 }
 
