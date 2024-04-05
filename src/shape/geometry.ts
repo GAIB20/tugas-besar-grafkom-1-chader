@@ -27,8 +27,11 @@ export abstract class Geometry<T> {
     protected vBuffer : WebGLBuffer | null;
     protected iBuffer : WebGLBuffer | null;
 
-    constructor(gl : WebGL2RenderingContext, program : WebGLProgram, posAttribLocation : number, colorAttribLocation : number, type : GeometryType) {
-        Geometry.numOfObjects += 1;
+    constructor(gl : WebGL2RenderingContext, program : WebGLProgram, 
+        posAttribLocation : number, colorAttribLocation : number, 
+        type : GeometryType, ignoreId? : boolean
+    ) {
+        if (!ignoreId) Geometry.numOfObjects += 1;
 
         this.id = Geometry.numOfObjects;
         this.gl = gl;

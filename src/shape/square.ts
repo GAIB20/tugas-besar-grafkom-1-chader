@@ -1,12 +1,14 @@
 import { drawScene } from "../main.js";
 import { chaderUI, TransformationCallbacks } from "../ui.js";
 import { matrixTransformer } from "../utils/chaderM3.js";
+import { RGBA } from "../utils/color.js";
 import { Geometry, GeometryOption, GeometryType } from "./geometry.js";
 
 interface SquareParams {
     x : number, 
     y : number,
     sideLength : number, 
+    color? : RGBA
 }
 
 export const SquareOption : GeometryOption = {
@@ -27,6 +29,7 @@ export class Square extends Geometry<SquareParams> {
     public x : number;
     public y : number;
     public sideLength : number;
+    public color : RGBA = { r: 0.576, g: 0.847, b: 0.890, a: 1 };
 
     public callbacks : TransformationCallbacks = {
         onTranslateX: (value) => {
@@ -52,22 +55,29 @@ export class Square extends Geometry<SquareParams> {
         }
     }
 
-    constructor(gl : WebGL2RenderingContext, program : WebGLProgram, posAttribLocation : number, colorAttribLocation : number, params : SquareParams) {
-        super(gl, program, posAttribLocation, colorAttribLocation, GeometryType.SQUARE);
+    constructor(gl : WebGL2RenderingContext, program : WebGLProgram, 
+        posAttribLocation : number, colorAttribLocation : number, params : SquareParams,
+        ignoreId? : boolean    
+    ) {
+        super(gl, program, posAttribLocation, colorAttribLocation, GeometryType.SQUARE, ignoreId);
         const { x, y, sideLength } = params;
         this.x = x;
         this.y = y;
         this.sideLength = sideLength;
+
+        if (params.color) {
+            this.color = params.color;
+        }
     }
 
     setGeometry(gl : WebGL2RenderingContext) : void {
         this.calcVertexLocations();
 
         const vertices = [
-            this.vertexLocations[0], this.vertexLocations[1], 0.576, 0.847, 0.890,
-            this.vertexLocations[2], this.vertexLocations[3], 0.576, 0.847, 0.890,
-            this.vertexLocations[4], this.vertexLocations[5], 0.576, 0.847, 0.890,
-            this.vertexLocations[6], this.vertexLocations[7], 0.576, 0.847, 0.890
+            this.vertexLocations[0], this.vertexLocations[1], this.color.r, this.color.g, this.color.b,
+            this.vertexLocations[2], this.vertexLocations[3], this.color.r, this.color.g, this.color.b,
+            this.vertexLocations[4], this.vertexLocations[5], this.color.r, this.color.g, this.color.b,
+            this.vertexLocations[6], this.vertexLocations[7], this.color.r, this.color.g, this.color.b
         ];
 
 

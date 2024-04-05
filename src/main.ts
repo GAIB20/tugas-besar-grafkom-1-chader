@@ -174,8 +174,11 @@ function changeActiveObjectById(id : number) {
     }
 }
 
+// Vertex Drag and Drop
 let draggingVertex = false;
 let selectedVertexIdx = -1;
+
+let selectedVertexHint : Square | null = null;
 
 function registerListeners(gl : WebGL2RenderingContext, program : WebGLProgram, posAttribLocation : number, colorAttribLocation : number) {
     // Resize and redraw the scene when the window resizes 
@@ -280,6 +283,15 @@ function registerListeners(gl : WebGL2RenderingContext, program : WebGLProgram, 
 
         if (selectedVertexIdx !== -1) {
             draggingVertex = true;
+            selectedVertexHint = new Square(gl, program, posAttribLocation, colorAttribLocation, {
+                x: ActiveObject.vertexLocations[selectedVertexIdx * 2],
+                y: ActiveObject.vertexLocations[selectedVertexIdx * 2 + 1],
+                sideLength: 0.2,
+                color: {r : 1, g : 0, b : 0, a : 1}
+            }, true);
+
+            drawScene(gl, program, posAttribLocation, colorAttribLocation);
+            selectedVertexHint.drawGeometry();
         }
     });
 
@@ -289,12 +301,22 @@ function registerListeners(gl : WebGL2RenderingContext, program : WebGLProgram, 
             const deltaY = event.movementY;
 
             ActiveObject?.onVertexMoved(selectedVertexIdx, deltaX, deltaY);
+            if (selectedVertexHint) {
+                selectedVertexHint.x = ActiveObject.vertexLocations[selectedVertexIdx * 2];
+                selectedVertexHint.y = ActiveObject.vertexLocations[selectedVertexIdx * 2 + 1];
+
+                selectedVertexHint.drawGeometry();
+            }
         }
     });
 
     canvas.addEventListener('mouseup', (event) => {
         draggingVertex = false;
         selectedVertexIdx = -1;
+
+        if (selectedVertexHint) {
+            selectedVertexHint = null;
+        }
     });
 }
 
