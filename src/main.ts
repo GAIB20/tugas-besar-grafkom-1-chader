@@ -5,6 +5,7 @@ import { Square, SquareOption } from "./shape/square.js";
 
 import { createProgram, createShader } from "./utils/shaderUtils.js";
 import { chaderUI } from "./ui.js";
+import { downloadScene, loadScene } from "./utils/sceneManager.js";
 
 const TypeToCreateOptions = {
     RectangleOption,
@@ -172,6 +173,7 @@ function main() {
         
     });
 
+    initSceneManager(gl, program, positionAttributeLocation, colorsLocation);
     resizeCanvasToDisplaySize();
 
     // Set the viewport
@@ -209,5 +211,33 @@ function changeActiveObjectById(id : number) {
     }
 }
 
+function initSceneManager(gl : WebGL2RenderingContext, program : WebGLProgram, posAttribLocation : number, colorAttribLocation : number) {
+    const saveBtn = document.getElementById('scene-save-btn') as HTMLButtonElement;
+    saveBtn.addEventListener('click', () => {
+        downloadScene(ObjectsInScene);
+    });
+
+    const loadBtn = document.getElementById('scene-load-btn') as HTMLButtonElement;
+    const fileInput = document.getElementById('scene-file') as HTMLInputElement;
+
+    loadBtn.addEventListener('click', () => {
+        const file = fileInput.files?.item(0);
+        if (!file) {
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const sceneData = event.target?.result as string;
+            ObjectsInScene = loadScene(sceneData, gl, program, posAttribLocation, colorAttribLocation);
+            console.log(ObjectsInScene)
+            drawScene(gl, program, posAttribLocation, colorAttribLocation);
+
+            // empty the file input
+            fileInput.value = '';
+        };
+        reader.readAsText(file);
+    });
+}
 
 main();

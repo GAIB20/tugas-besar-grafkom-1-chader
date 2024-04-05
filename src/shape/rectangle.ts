@@ -59,7 +59,7 @@ export class Rectangle extends Geometry<RectangleParams> {
     }
 
     constructor(gl : WebGL2RenderingContext, program : WebGLProgram, posAttribLocation : number, colorAttribLocation : number, params : RectangleParams) {
-        super(gl, program, posAttribLocation, colorAttribLocation);
+        super(gl, program, posAttribLocation, colorAttribLocation, GeometryType.RECTANGLE);
         const {x, y, width, height} = params;
         this.x = x;
         this.y = y;

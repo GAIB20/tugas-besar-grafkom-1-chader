@@ -57,7 +57,7 @@ export class Square extends Geometry<SquareParams> {
     }
 
     constructor(gl : WebGL2RenderingContext, program : WebGLProgram, posAttribLocation : number, colorAttribLocation : number, params : SquareParams) {
-        super(gl, program, posAttribLocation, colorAttribLocation);
+        super(gl, program, posAttribLocation, colorAttribLocation, GeometryType.SQUARE);
         const { x, y, sideLength } = params;
         this.x = x;
         this.y = y;
