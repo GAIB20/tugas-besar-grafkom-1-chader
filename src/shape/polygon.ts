@@ -173,6 +173,9 @@ export class Polygon extends Geometry<PolygonParams> {
     }
 
     onObjectDeselected(): void {
+        const shapeControlGroup = document.getElementById("shape-control-group");
+        shapeControlGroup?.remove();
+
         chaderUI.cleanTransformControls();
     }
 
@@ -216,7 +219,95 @@ export class Polygon extends Geometry<PolygonParams> {
 
         this.vertices[index*5] += deltaX / 50;
         this.vertices[index*5+1] -= deltaY / 50;
+
+        let tempVertices : number[] = this.vertices;
+
+        this.vertices = this.convexHull(this.vertices, 5);
         drawScene(this.gl, this.program, this.posAttribLocation, this.colorAttribLocation);
+
+        this.vertices = tempVertices;
+    }
+
+    orientation(px : number, py : number, qx : number, qy : number, rx : number, ry : number): number {
+        // 0 = Collinear
+        // 1 = Clockwise
+        // 2 = counterclockwise
+        const val = (qy - py) * (rx - qx) - (qx - px) * (ry - qy);
+        if (val === 0) return 0;
+        return (val > 0) ? 1 : 2;
+    }
+
+    convexHull(points: number[], size: number): number[] {
+        const pointsLength = points.length;
+        
+        if (pointsLength < 6) {
+            // convexHull can't be used for anything with less than 3 coordinates
+            return [];
+        } else {
+            const hull: number[] = [];
+            let leftmostIndex = 0;
+        
+            // find the index for the leftmost coordinate
+            for (let i = size; i < pointsLength; i += size) { // traverse based on size
+                if (points[i] < points[leftmostIndex]) {
+                    leftmostIndex = i;
+                }
+            }
+        
+            let p = leftmostIndex;
+            let q: number;
+        
+            do {
+                for (let k = 0; k < size; k++) {
+                    hull.push(points[p + k]);
+                }
+                q = ((p + size) % pointsLength) || 0;
+        
+                for (let i = 0; i < pointsLength; i += size) {
+                    // If i is more counterclockwise than current q, then update q
+                    if (this.orientation(
+                        points[p], points[p + 1],
+                        points[i], points[i + 1],
+                        points[q], points[q + 1]
+                    ) === 2) {
+                        q = i;
+                    }
+                }
+        
+                p = q;
+        
+            } while (p !== leftmostIndex); // repeat until p is the leftmost coordinate
+    
+            // check if the shape has a minimum of 1 unpicked coordinates
+            const hullLength = hull.length;
+            if (hullLength < pointsLength) {
+                // add any coordinates that hasn't been picked
+                let i;
+                let j;
+                let k;
+                for (i = 0; i < hullLength; i++) {
+                    for (j = 0; j < pointsLength; j++) {
+                        let counter = 0;
+                        for (k = 0; k < size; k++) {
+                            if (hull[i*size + k] == points[j*size + k]) {
+                                counter++;
+                            }
+                        }
+                        
+                        if (counter != size) { // if the current comparison is between 2 different coordinates
+                            for (k = size-1; k >= 0; k--) {
+                                hull.unshift(points[j*size + k]);
+                            }
+    
+                            i = pointsLength;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return hull;   
+        }
     }
 }
 
